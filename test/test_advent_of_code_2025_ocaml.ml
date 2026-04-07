@@ -1,13 +1,13 @@
 open OUnit2
 
-let suite name =
+let secret_entrance =
   let password = Advent_of_code_2025.Secret_entrance.password in
   let stops_at_zero = Advent_of_code_2025.Secret_entrance.stops_at_zero in
   let passes_on_zero = Advent_of_code_2025.Secret_entrance.passes_on_zero in
   let sample = "../testdata/day01_sample.txt" in
   let input = "../testdata/day01_input.txt" in
-  Printf.printf "%s\n" name;
-  name
+  Printf.printf "day 01: secret entrance\n";
+  "secret entrance"
   >::: [
          ( "secret entrance a with sample" >:: fun _ ->
            assert_equal ~printer:string_of_int 3 (password sample stops_at_zero)
@@ -23,4 +23,15 @@ let suite name =
              (password input passes_on_zero) );
        ]
 
-let _ = run_test_tt_main (suite "secret entrance")
+let gift_shop =
+  let sum_invalid_ids = Advent_of_code_2025.Gift_shop.sum_invalid_ids in
+  let sample = "../testdata/day02_sample.txt" in
+  Printf.printf "day 02: gift shop\n";
+  "gift shop"
+  >::: [
+         ( "dummy" >:: fun _ ->
+           assert_equal ~printer:string_of_int 1227775554
+             (sum_invalid_ids sample) );
+       ]
+
+let _ = List.map run_test_tt_main [ secret_entrance; gift_shop ]

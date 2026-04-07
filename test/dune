@@ -3,4 +3,6 @@
  (libraries ounit2 advent_of_code_2025)
  (deps
   (file ../testdata/day01_sample.txt)
-  (file ../testdata/day01_input.txt)))
+  (file ../testdata/day01_input.txt)
+  (file ../testdata/day02_sample.txt)
+  (file ../testdata/day02_input.txt)))

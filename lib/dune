@@ -1,3 +1,3 @@
 (library
  (name advent_of_code_2025)
- (modules secret_entrance))
+ (modules secret_entrance gift_shop))
