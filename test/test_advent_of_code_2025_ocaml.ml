@@ -1,7 +1,8 @@
 open OUnit2
 
-let tests =
-  "all tests"
+let suite name =
+  Printf.printf "%s\n" name;
+  name
   >::: [
          ( "secret entrance a with sample" >:: fun _ ->
            assert_equal ~printer:string_of_int 3
@@ -21,4 +22,4 @@ let tests =
                 Secret_entrance.passes_on_zero) );
        ]
 
-let _ = run_test_tt_main tests
+let _ = run_test_tt_main (suite "secret entrance")
