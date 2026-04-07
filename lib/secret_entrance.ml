@@ -14,35 +14,35 @@ let dial instruction =
     let sign = String.sub instruction 0 1 in
     match sign with "L" -> -value | _ -> value
 
-let rec ticks_a accum pos values =
-  match values with
-  | [] -> accum
-  | x :: xs -> (
-      let new_pos = pos + x in
-      match new_pos mod 100 == 0 with
-      | true -> ticks_a (accum + 1) new_pos xs
-      | false -> ticks_a accum new_pos xs)
-
-let actual_password_a file_name =
-  let lines = read_lines file_name in
-  let values = List.map dial lines in
-  ticks_a 0 50 values
-
 let modulo x y =
   let r = x mod y in
   if r >= 0 then r else r + y
 
-let clicks pos delta =
-  if delta >= 0 then (pos + delta) / 100 else (modulo (-pos) 100 - delta) / 100
-
-let rec ticks_b counter pos values =
+let rec stops_at_zero counter position values =
   match values with
   | [] -> counter
-  | x :: xs ->
-      let new_pos = modulo (pos + x) 100 in
-      ticks_b (counter + clicks pos x) new_pos xs
+  | delta :: rest ->
+      let new_position = position + delta in
+      if new_position mod 100 == 0 then
+        stops_at_zero (counter + 1) new_position rest
+      else stops_at_zero counter new_position rest
 
-let actual_password_b file_name =
+let rec passes_on_zero counter position values =
+  match values with
+  | [] -> counter
+  | value :: rest ->
+      let new_position = position + value in
+      let passes =
+        (abs new_position / 100)
+        +
+        match new_position with
+        | 0 -> 1
+        | p when p < 0 && position <> 0 -> 1
+        | _ -> 0
+      in
+      passes_on_zero (counter + passes) (modulo new_position 100) rest
+
+let password file_name f =
   let lines = read_lines file_name in
   let values = List.map dial lines in
-  ticks_b 0 50 values
+  f 0 50 values
