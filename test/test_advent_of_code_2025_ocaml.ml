@@ -46,12 +46,16 @@ let gift_shop =
              (sum_invalid_ids [ (17, 52) ]) );
          ( "sum of invalid IDs example 1000 to 2000" >:: fun _ ->
            assert_equal ~printer:string_of_int
-             (1010 + 1111 + 1212 + 1313 + 1414 + 1515 + 1616 + 1717 + 1818 + 1919)
+             (1010 + 1111 + 1212 + 1313 + 1414 + 1515 + 1616 + 1717 + 1818
+            + 1919)
              (sum_invalid_ids [ (1000, 2000) ]) );
          ( "sum of invalid IDs example 100000 to 101000" >:: fun _ ->
            assert_equal ~printer:string_of_int
-             (100100 +101101 +102102 +103103)
+             (100100 + 101101 + 102102 + 103103)
              (sum_invalid_ids [ (100000, 104000) ]) );
+         ( "sum of invalid IDs example 95 to 115" >:: fun _ ->
+           assert_equal ~printer:string_of_int 99
+             (sum_invalid_ids [ (95, 115) ]) );
        ]
 
 let _ = List.map run_test_tt_main [ secret_entrance; gift_shop ]
