@@ -69,7 +69,7 @@ let gift_shop =
            1227775554 (sum_invalid_ids_from_file sample) );
          ( "sum of invalid IDs for input" >:: fun _ ->
            assert_equal ~printer:string_of_int
-           1227775554 (sum_invalid_ids_from_file input) );
+           29940924880 (sum_invalid_ids_from_file input) );
        ]
 
 let _ = List.map run_test_tt_main [ secret_entrance; gift_shop ]
