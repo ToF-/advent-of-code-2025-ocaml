@@ -27,7 +27,8 @@ let rec invalid_ids first last =
     let start = if a >= first then a else a + step in
     if start > last then []
     else
-      List.append (invalid_ids_aux start step limit last)
+      List.append
+        (invalid_ids_aux start step limit last)
         (if l < m then invalid_ids (limit + 1) last else [])
 
 let rec sum_invalid_ids intervals =
