@@ -1,1 +1,1 @@
-val sum_invalid_ids : string -> int
+val sum_invalid_ids : (int * int) list -> int
