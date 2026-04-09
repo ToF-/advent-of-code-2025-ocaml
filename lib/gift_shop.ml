@@ -11,31 +11,32 @@ let pairs_of_ints s =
 let rec len n = if n < 10 then 1 else 1 + len (n / 10)
 let rec pow n = match n with 0 -> 1 | m -> 10 * pow (n - 1)
 
-let rec invalid_ids first last =
-  let rec invalid_ids_aux id step limit last =
-    if id > last || id > limit then []
-    else id :: invalid_ids_aux (id + step) step limit last
-  in
-  let l = len first in
-  let m = len last in
-  let p = pow (l / 2) in
-  let limit = pow l - 1 in
-  if l mod 2 > 0 then invalid_ids (limit + 1) last
-  else
-    let a = (first / p * p) + (first / p) in
-    let step = p + 1 in
-    let start = if a >= first then a else a + step in
-    if start > last then []
+let rec sum_ids id_min id_max =
+
+    let rec sum_ids_step curr step limit =
+        if curr > id_max || curr > limit
+        then 0
+        else curr + sum_ids_step (curr + step) step limit
+    in
+    let l = len id_min in
+    let m = len id_max in
+    let p = pow (l / 2) in
+    let lim = pow l - 1 in
+    if l mod 2 > 0 then sum_ids (lim + 1) id_max
     else
-      List.append
-        (invalid_ids_aux start step limit last)
-        (if l < m then invalid_ids (limit + 1) last else [])
+        let first_id = (id_min / p * p) + (id_min / p) in
+        let step = p + 1 in
+        let start = if first_id >= id_min then first_id else first_id + step in
+        if start > id_max then 0
+        else
+            sum_ids_step start step lim
+            + if l < m then sum_ids (lim + 1) id_max else 0
+
 
 let rec sum_invalid_ids intervals =
   match intervals with
   | [] -> 0
-  | (first, last) :: rest ->
-      List.fold_left ( + ) 0 (invalid_ids first last) + sum_invalid_ids rest
+  | (id_min, id_max) :: rest -> sum_ids id_min id_max + sum_invalid_ids rest
 
 let sum_invalid_ids_from_file file_name =
   let line = read_line file_name in
