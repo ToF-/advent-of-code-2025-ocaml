@@ -50,9 +50,10 @@ let rec sum_ids_b id_min id_max =
   let l = len id_min in
   let m = len id_max in
   let lim = pow l - 1 in
+
   let rec collect_ids curr step limit set =
     Printf.printf "l:%d\tcurr:%d step:%d limit:%d\n" l curr step limit;
-    if curr > id_max || curr > limit then set
+    if curr < 10 || curr > id_max || curr > limit then set
     else collect_ids (curr + step) step limit (IntSet.add curr set)
   in
   let collect_pat_ids p l lp ids =
@@ -96,7 +97,7 @@ let rec sum_invalid_ids intervals f_acc =
   | (id_min, id_max) :: rest -> f_acc id_min id_max + sum_invalid_ids rest f_acc
 
 let sum_invalid_ids_from_file file_name f_acc =
-    Printf.printf "sum_invalid_ids\n" ;
+    Printf.printf "****** sum_invalid_ids for %s\n" file_name;
   let line = read_line file_name in
   let intervals = pairs_of_ints line in
   sum_invalid_ids intervals f_acc

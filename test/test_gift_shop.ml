@@ -73,6 +73,6 @@ let tests =
            assert_equal ~printer:string_of_int 4174379265
              (sum_invalid_ids_from_file sample sum_ids_b) );
          ( "sum of invalid IDs for input (B)" >:: fun _ ->
-           assert_equal ~printer:string_of_int 48631959042
+           assert_equal ~printer:string_of_int 48631958998
              (sum_invalid_ids_from_file input sum_ids_b) );
        ]
