@@ -62,13 +62,13 @@ let tests =
              (sum_invalid_ids [ (565653, 565659) ] sum_ids_b) );
          ( "sum of invalid IDs example 2121212118 to 2121212124 (B)" >:: fun _ ->
            assert_equal ~printer:string_of_int 2121212121
-             (sum_invalid_ids [ (2121212118,2121212124) ] sum_ids_b) );
+             (sum_invalid_ids [ (2121212118, 2121212124) ] sum_ids_b) );
          ( "sum of invalid IDs example 824824821 to 824824827 (B)" >:: fun _ ->
            assert_equal ~printer:string_of_int 824824824
              (sum_invalid_ids [ (824824821, 824824827) ] sum_ids_b) );
          ( "sum of invalid IDs example 38593856 to 38593862 (B)" >:: fun _ ->
            assert_equal ~printer:string_of_int 38593859
-             (sum_invalid_ids [ (38593856,38593862) ] sum_ids_b) );
+             (sum_invalid_ids [ (38593856, 38593862) ] sum_ids_b) );
          ( "sum of invalid IDs for sample (B)" >:: fun _ ->
            assert_equal ~printer:string_of_int 4174379265
              (sum_invalid_ids_from_file sample sum_ids_b) );

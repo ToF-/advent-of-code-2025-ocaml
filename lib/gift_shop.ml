@@ -31,64 +31,58 @@ let rec sum_ids_a id_min id_max =
       + if l < m then sum_ids_a (lim + 1) id_max else 0
 
 (*
-    rept 5 10 7 → 5555555 
-    rept 37 100 2 → 3737
-    rept 54 100 4 → 54545454
-    rept 435 1000 2 → 435435
-    rept 4807 10000 3 → 480748074807
+    repeat 5 10 7 → 5555555 
+    repeat 37 100 2 → 3737
+    repeat 54 100 4 → 54545454
+    repeat 435 1000 2 → 435435
+    repeat 4807 10000 3 → 480748074807
 *)
-let rec rept pat factor count =
-  if count == 1 then pat else pat + (factor * rept pat factor (count - 1))
+let rec repeat pattern factor count =
+  if count == 1 then pattern
+  else pattern + (factor * repeat pattern factor (count - 1))
 
-let rec fstd n factor = if n < factor then n else fstd (n / factor) factor
+let first_digits n length =
+  let rec first_digits_under n limit =
+    if n < limit then n else first_digits_under (n / limit) limit
+  in
+  first_digits_under n (pow length)
 
 module IntSet = Set.Make (Int)
 
 let rec sum_ids_b id_min id_max =
-  Printf.printf "sum_ids_b %d %d\n" id_min id_max;
   let ids = IntSet.empty in
-  let l = len id_min in
-  let m = len id_max in
-  let lim = pow l - 1 in
+  let length = len id_min in
+  let id_max_length = len id_max in
+  let limit = pow length - 1 in
 
-  let rec collect_ids curr step limit set =
-    Printf.printf "l:%d\tcurr:%d step:%d limit:%d\n" l curr step limit;
-    if curr < 10 || curr > id_max || curr > limit then set
-    else collect_ids (curr + step) step limit (IntSet.add curr set)
+  let rec collect_ids current step set =
+    if current < 10 || current > id_max || current > limit then set
+    else collect_ids (current + step) step (IntSet.add current set)
   in
-  let collect_pat_ids p l lp ids =
-    let pat = fstd id_min (pow p) in
-    let i = rept pat (pow p) lp in
-    let step = rept 1 (pow p) lp in
-    let init = if i >= id_min then i else i + step in
-    Printf.printf "pat:%d i:%d init:%d step:%d\n" pat i init step;
-    collect_ids init step lim ids
+  let collect_pattern_ids pattern_length length lp ids =
+    let pattern = first_digits id_min pattern_length in
+    let initial = repeat pattern (pow pattern_length) lp in
+    let step = repeat 1 (pow pattern_length) lp in
+    let first = if initial >= id_min then initial else initial + step in
+    collect_ids first step ids
   in
-  if l < m then sum_ids_b id_min lim + sum_ids_b (lim + 1) id_max
+  if length < id_max_length then
+    sum_ids_b id_min limit + sum_ids_b (limit + 1) id_max
   else
     List.fold_left ( + ) 0
       (IntSet.to_list
-         (match l with
-         | 2 -> collect_pat_ids 1 l 2 ids
-         | 4 -> collect_pat_ids 2 l 2 ids
+         (match length with
+         | 2 -> collect_pattern_ids 1 length 2 ids
+         | 4 -> collect_pattern_ids 2 length 2 ids
          | 6 ->
-             let set1 = collect_pat_ids 3 l 2 ids in
-             let set2 = collect_pat_ids 2 l 3 set1 in
-             IntSet.union set1 set2
+             collect_pattern_ids 3 length 2 (collect_pattern_ids 2 length 3 ids)
          | 8 ->
-             let set1 = collect_pat_ids 4 l 2 ids in
-             let set2 = collect_pat_ids 2 l 4 set1 in
-             IntSet.union set1 set2
+             collect_pattern_ids 4 length 2 (collect_pattern_ids 2 length 4 ids)
          | 9 ->
-             let set1 = collect_pat_ids 1 l 9 ids in
-             let set2 = collect_pat_ids 3 l 3 set1 in
-             IntSet.union set1 set2
+             collect_pattern_ids 1 length 9 (collect_pattern_ids 3 length 3 ids)
          | 10 ->
-             let set1 = collect_pat_ids 5 l 2 ids in
-             let set2 = collect_pat_ids 2 l 5 set1 in
-             IntSet.union set1 set2
-            
-         | n when n mod 2 > 0 -> collect_pat_ids 1 l l ids
+             collect_pattern_ids 5 length 2 (collect_pattern_ids 2 length 5 ids)
+         | n when n mod 2 > 0 -> collect_pattern_ids 1 length length ids
          | _ -> IntSet.empty))
 
 let rec sum_invalid_ids intervals f_acc =
@@ -97,7 +91,6 @@ let rec sum_invalid_ids intervals f_acc =
   | (id_min, id_max) :: rest -> f_acc id_min id_max + sum_invalid_ids rest f_acc
 
 let sum_invalid_ids_from_file file_name f_acc =
-    Printf.printf "****** sum_invalid_ids for %s\n" file_name;
   let line = read_line file_name in
   let intervals = pairs_of_ints line in
   sum_invalid_ids intervals f_acc
