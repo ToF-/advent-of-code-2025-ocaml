@@ -1,6 +1,3 @@
-let read_line file_name =
-  String.trim (In_channel.with_open_bin file_name In_channel.input_all)
-
 let pairs_of_ints s =
   List.map
     (fun s ->
@@ -42,26 +39,37 @@ let rec sum_ids id_min id_max option_b =
     collect_ids first step ids
   in
   if length < id_max_length then
-    (sum_ids id_min limit option_b) + (sum_ids (limit + 1) id_max option_b)
+    sum_ids id_min limit option_b + sum_ids (limit + 1) id_max option_b
   else
     List.fold_left ( + ) 0
       (IntSet.to_list
          (match length with
          | 2 -> collect_pattern_ids 1 2 ids
          | 4 -> collect_pattern_ids 2 2 ids
-         | 6 -> collect_pattern_ids 3 2 (if option_b then collect_pattern_ids 2 3 ids else ids)
-         | 8 -> collect_pattern_ids 4 2 (if option_b then collect_pattern_ids 2 4 ids else ids)
-         | 9 -> if option_b then collect_pattern_ids 1 9 (collect_pattern_ids 3 3 ids) else ids
-         | 10 -> collect_pattern_ids 5 2 (if option_b then collect_pattern_ids 2 5 ids else ids)
-         | n when n mod 2 > 0 -> if option_b then collect_pattern_ids 1 length ids else ids
+         | 6 ->
+             collect_pattern_ids 3 2
+               (if option_b then collect_pattern_ids 2 3 ids else ids)
+         | 8 ->
+             collect_pattern_ids 4 2
+               (if option_b then collect_pattern_ids 2 4 ids else ids)
+         | 9 ->
+             if option_b then
+               collect_pattern_ids 1 9 (collect_pattern_ids 3 3 ids)
+             else ids
+         | 10 ->
+             collect_pattern_ids 5 2
+               (if option_b then collect_pattern_ids 2 5 ids else ids)
+         | n when n mod 2 > 0 ->
+             if option_b then collect_pattern_ids 1 length ids else ids
          | _ -> IntSet.empty))
 
 let rec sum_invalid_ids intervals option_b =
   match intervals with
   | [] -> 0
-  | (id_min, id_max) :: rest -> (sum_ids id_min id_max option_b) + sum_invalid_ids rest option_b
+  | (id_min, id_max) :: rest ->
+      sum_ids id_min id_max option_b + sum_invalid_ids rest option_b
 
 let sum_invalid_ids_from_file file_name option_b =
-  let line = read_line file_name in
+  let line = Utils.read_line file_name in
   let intervals = pairs_of_ints line in
   sum_invalid_ids intervals option_b

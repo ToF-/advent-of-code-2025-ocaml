@@ -1,10 +1,3 @@
-let read_lines file_name =
-  let lines =
-    String.split_on_char '\n'
-      (In_channel.with_open_bin file_name In_channel.input_all)
-  in
-  List.filter (fun s -> s <> "") lines
-
 let dial instruction =
   if String.length instruction < 2 then invalid_arg "instruction too short"
   else
@@ -43,6 +36,6 @@ let rec passes_on_zero counter position values =
       passes_on_zero (counter + passes) (modulo new_position 100) rest
 
 let password file_name f =
-  let lines = read_lines file_name in
+  let lines = Utils.read_lines file_name in
   let values = List.map dial lines in
   f 0 50 values

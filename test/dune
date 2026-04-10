@@ -1,9 +1,15 @@
 (test
  (name test_advent_of_code_2025_ocaml)
- (modules test_advent_of_code_2025_ocaml test_secret_entrance test_gift_shop)
+ (modules
+  test_advent_of_code_2025_ocaml
+  test_secret_entrance
+  test_gift_shop
+  test_lobby)
  (libraries ounit2 advent_of_code_2025)
  (deps
   (file ../testdata/day01_sample.txt)
   (file ../testdata/day01_input.txt)
   (file ../testdata/day02_sample.txt)
-  (file ../testdata/day02_input.txt)))
+  (file ../testdata/day02_input.txt)
+  (file ../testdata/day03_sample.txt)
+  (file ../testdata/day03_input.txt)))
