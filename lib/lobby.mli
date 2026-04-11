@@ -1,1 +1,1 @@
-val total_joltage : string -> int
+val total_joltage : string -> int -> int
