@@ -19,6 +19,17 @@ let rec max_dual batteries =
           let b = max_dual (Seq.cons u rest) in
           if a > b then a else b)
 
+let max_joltage size batteries =
+    let max_batteries = Seq.length batteries in
+    let matrix = Array.init_matrix size max_batteries (fun _ _ -> 0) in
+    let  _ = Seq.fold_left (fun i value ->
+        matrix.(0).(i) <- value;
+        i + 1) 0 batteries in
+    let rec max_joltage_so_far i pos pow_10 =
+        if pos < 0 then ;
+        else 
+            let val1 = 
+
 let total_joltage file_name =
   let lines = Utils.read_lines file_name in
   List.fold_left ( + ) 0 (List.map (fun line -> max_dual (ints line)) lines)
