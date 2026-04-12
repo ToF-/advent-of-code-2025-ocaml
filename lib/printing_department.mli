@@ -1,1 +1,1 @@
-val accessible_rolls : string -> int
+val accessible_rolls : string -> bool -> int
