@@ -10,27 +10,20 @@ let joltage_matrix size batteries =
   let is = List.init size (fun i -> i) in
   let js = List.init length (fun j -> length - j - 1) in
 
+  let joltage_at i j matrix =
+      if i < 0 || j >= length then 0 else matrix.(i).(j)
+  in
+
   let set_joltage_matrix (i, j) matrix =
-    match i with
-    | 0 ->
-        let _ =
-          matrix.(0).(j) <-
-            (if j < length - 1 then max batteries.(j) matrix.(0).(j + 1)
-             else batteries.(j))
-        in
-        matrix
-    | _ ->
-        if (j + i) < length
-        then
+        if j + i < length then
           let _ =
             matrix.(i).(j) <-
               max
-                ((batteries.(j) * pow_10 i) + matrix.(i - 1).(j + 1))
-                matrix.(i).(j + 1)
+                ((batteries.(j) * pow_10 i) + (joltage_at (i - 1) (j + 1) matrix))
+                (joltage_at i (j + 1) matrix)
           in
           matrix
-        else
-            matrix
+        else matrix
   in
 
   let fold_joltage i initial =
