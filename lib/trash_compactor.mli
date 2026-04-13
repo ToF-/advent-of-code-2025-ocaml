@@ -1,2 +1,2 @@
-val acquire : string -> int * int * int array array * (int -> int -> int) array * int array
-val grand_total : string -> int
+val grand_total_a : string -> int
+val grand_total_b : string -> int

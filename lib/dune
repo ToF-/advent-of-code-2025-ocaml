@@ -8,4 +8,6 @@
   printing_department
   cafeteria
   trash_compactor)
- (libraries str))
+ (libraries str)
+ (preprocess
+  (pps ppx_deriving.show ppx_deriving.ord)))
