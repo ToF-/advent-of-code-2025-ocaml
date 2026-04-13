@@ -18,4 +18,7 @@ let tests =
          ( "fresh ingredients for sample (B)" >:: fun _ ->
            assert_equal ~printer:string_of_int 14
              (fresh_ingredients sample option_b) );
+         ( "fresh ingredients for input (B)" >:: fun _ ->
+           assert_equal ~printer:string_of_int 14
+             (fresh_ingredients input option_b) );
        ]

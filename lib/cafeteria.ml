@@ -16,11 +16,28 @@ let rec is_fresh ingredient intervals =
   | [] -> false
   | interval :: rest -> within ingredient interval || is_fresh ingredient rest
 
+let rec scan_fold f list =
+  match list with
+| [] -> []
+| (elem::rest) -> List.append (List.fold_left (fun acc item -> List.cons (f elem item) acc) [] rest) (scan_fold f rest)
 
+
+let rec intersect (a_start, a_end) (b_start, b_end) =
+    if b_start < a_start
+    then intersect (b_start, b_end) (a_start, a_end)
+    else (b_start, min a_end b_end)
+
+let size (a,b) =
+    if a > b then 0 else (b - a) + 1
+    
 let fresh_ingredients file_name option_b =
   let lines = Utils.read_lines file_name in
   let intervals, ingredients = acquire lines in
-  if option_b then 0
+  if option_b then 
+      let intersects = scan_fold intersect intervals in
+      let t_intervals = List.fold_left (fun acc interval -> acc + size interval) 0 intervals in
+      let t_intersect = List.fold_left (fun acc intersect -> acc + size intersect) 0 intersects in
+      t_intervals - t_intersect
   else
     List.fold_left
       (fun acc ingredient ->
