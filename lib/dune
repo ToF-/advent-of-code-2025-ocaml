@@ -6,4 +6,7 @@
   gift_shop
   lobby
   printing_department
-  cafeteria))
+  cafeteria
+  trash_compactor)
+ (libraries
+   str))
