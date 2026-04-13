@@ -1,1 +1,1 @@
-val fresh_ingredients: string -> int
+val fresh_ingredients : string -> bool -> int

@@ -1,3 +1,9 @@
 (library
  (name advent_of_code_2025)
- (modules utils secret_entrance gift_shop lobby printing_department cafeteria))
+ (modules
+  utils
+  secret_entrance
+  gift_shop
+  lobby
+  printing_department
+  cafeteria))
