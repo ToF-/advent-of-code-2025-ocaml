@@ -10,7 +10,15 @@ let acquire lines =
     (List.map (fun s -> parse_interval s) ss1,
     List.map (fun s -> int_of_string s) ss2)
 
+let rec is_fresh ingredient intervals =
+    let within x (a,b) = x >= a && x <= b in 
+    match intervals with
+    | [] -> false
+    | (interval:: rest) -> within ingredient interval || is_fresh ingredient rest
+
 let fresh_ingredients file_name =
     let lines = Utils.read_lines file_name in
     let (intervals, ingredients) = acquire lines in
-    List.length intervals
+    List.fold_left (fun acc ingredient ->
+        acc + if is_fresh ingredient intervals then 1 else 0)
+    0 ingredients
