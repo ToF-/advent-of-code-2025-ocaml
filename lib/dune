@@ -8,5 +8,4 @@
   printing_department
   cafeteria
   trash_compactor)
- (libraries
-   str))
+ (libraries str))
