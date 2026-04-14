@@ -82,8 +82,7 @@ let grand_total_b file_name =
   let numbers, operations, initial_values = acquire_b file_name in
   let rec totalize total acc count numbers =
     match numbers with
-    | [] ->
-        total + acc
+    | [] -> total + acc
     | 0 :: rest ->
         let new_count = count + 1 in
         let initial_value = initial_values.(new_count) in

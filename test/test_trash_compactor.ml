@@ -16,5 +16,6 @@ let tests =
          ( "grand total for sample (B)" >:: fun _ ->
            assert_equal ~printer:string_of_int 3263827 (grand_total_b sample) );
          ( "grand total for input (B)" >:: fun _ ->
-           assert_equal ~printer:string_of_int 9640641878593 (grand_total_b input) );
+           assert_equal ~printer:string_of_int 9640641878593
+             (grand_total_b input) );
        ]

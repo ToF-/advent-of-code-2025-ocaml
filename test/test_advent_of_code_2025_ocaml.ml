@@ -9,4 +9,5 @@ let _ =
       Test_printing_department.tests;
       Test_cafeteria.tests;
       Test_trash_compactor.tests;
+      Test_laboratories.tests;
     ]
