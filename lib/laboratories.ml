@@ -35,8 +35,7 @@ let count_splits lines initial_beams =
          if String.contains line '^' then
            let new_splits, new_beams = split_beams line beams in
            (splits + new_splits, new_beams)
-         else
-           (splits, beams))
+         else (splits, beams))
        (0, initial_beams) lines)
 
 let total_splits file_name =
@@ -45,3 +44,34 @@ let total_splits file_name =
   | head :: lines ->
       let beams = IntSet.empty |> IntSet.add (find_source head) in
       count_splits lines beams
+
+let splitter_set line =
+  Seq.fold_lefti
+    (fun acc i c -> if c == '^' then acc |> IntSet.add i else acc)
+    IntSet.empty (String.to_seq line)
+
+let paths initial_pos lines =
+  List.fold_left
+    (fun all_paths line ->
+      if String.contains line '^' then
+        let splitters = splitter_set line in
+        let position_set =
+          List.fold_left
+            (fun acc path ->
+              if splitters |> IntSet.mem (List.hd path) then
+                acc |> IntSet.remove position
+                |> IntSet.add (position - 1)
+                |> IntSet.add (position + 1)
+              else acc)
+            IntSet.empty positions
+        in
+        IntSet.to_list position_set
+      else positions)
+    [ [initial_pos] ] lines
+
+let total_paths file_name =
+  match Utils.read_lines file_name with
+  | [] -> invalid_arg "empty input file"
+  | head :: lines ->
+      let initial_pos = find_source head in
+      List.length (paths initial_pos lines)
