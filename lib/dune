@@ -8,7 +8,8 @@
   printing_department
   cafeteria
   trash_compactor
-  laboratories)
+  laboratories
+  playground)
  (libraries str)
  (preprocess
   (pps ppx_deriving.show ppx_deriving.ord)))

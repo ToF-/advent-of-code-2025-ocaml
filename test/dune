@@ -8,7 +8,8 @@
   test_printing_department
   test_cafeteria
   test_trash_compactor
-  test_laboratories)
+  test_laboratories
+  test_playground)
  (libraries ounit2 advent_of_code_2025)
  (deps
   (file ../testdata/day01_sample.txt)
@@ -24,4 +25,6 @@
   (file ../testdata/day06_sample.txt)
   (file ../testdata/day06_input.txt)
   (file ../testdata/day07_sample.txt)
-  (file ../testdata/day07_input.txt)))
+  (file ../testdata/day07_input.txt)
+  (file ../testdata/day08_sample.txt)
+  (file ../testdata/day08_input.txt)))
