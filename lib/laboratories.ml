@@ -50,28 +50,25 @@ let splitter_set line =
     (fun acc i c -> if c == '^' then acc |> IntSet.add i else acc)
     IntSet.empty (String.to_seq line)
 
-let paths initial_pos lines =
-  List.fold_left
-    (fun all_paths line ->
-      if String.contains line '^' then
-        let splitters = splitter_set line in
-        let position_set =
-          List.fold_left
-            (fun acc path ->
-              if splitters |> IntSet.mem (List.hd path) then
-                acc |> IntSet.remove position
-                |> IntSet.add (position - 1)
-                |> IntSet.add (position + 1)
-              else acc)
-            IntSet.empty positions
-        in
-        IntSet.to_list position_set
-      else positions)
-    [ [initial_pos] ] lines
+let nb_paths initial_pos lines =
+  List.length
+    (List.fold_left
+       (fun acc_positions line ->
+           Printf.printf "%d\n" (List.length acc_positions) ;
+         if String.contains line '^' then
+           let splitters = splitter_set line in
+           List.fold_left
+             (fun positions position ->
+               if splitters |> IntSet.mem position then
+                 (position - 1) :: (position + 1) :: positions
+               else position :: positions)
+             [] acc_positions
+         else acc_positions)
+       [ initial_pos ] lines)
 
 let total_paths file_name =
   match Utils.read_lines file_name with
   | [] -> invalid_arg "empty input file"
   | head :: lines ->
       let initial_pos = find_source head in
-      List.length (paths initial_pos lines)
+      nb_paths initial_pos (List.take 90 lines)
