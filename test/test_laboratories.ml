@@ -14,4 +14,6 @@ let tests =
            assert_equal ~printer:string_of_int 1660 (total_splits input) );
          ( "total paths for sample (B)" >:: fun _ ->
            assert_equal ~printer:string_of_int 40 (total_paths sample) );
+         ( "total paths for input (B)" >:: fun _ ->
+           assert_equal ~printer:string_of_int 40 (total_paths input) );
        ]
