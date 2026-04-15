@@ -1,5 +1,6 @@
 open Utils
 module IntSet = Set.Make (Int)
+module IntMap = Map.Make (Int)
 
 let find_source line =
   match Seq.find_index (fun c -> c == 'S') (String.to_seq line) with
@@ -50,21 +51,39 @@ let splitter_set line =
     (fun acc i c -> if c == '^' then acc |> IntSet.add i else acc)
     IntSet.empty (String.to_seq line)
 
+let rec print_pairs pairs = 
+    match pairs with
+    | [] -> Printf.printf "\n"
+    | ((k,v)::rest) -> Printf.printf "(%d,%d);" k v ; print_pairs rest
+
 let nb_paths initial_pos lines =
-  List.length
-    (List.fold_left
-       (fun acc_positions line ->
-           Printf.printf "%d\n" (List.length acc_positions) ;
-         if String.contains line '^' then
-           let splitters = splitter_set line in
-           List.fold_left
-             (fun positions position ->
-               if splitters |> IntSet.mem position then
-                 (position - 1) :: (position + 1) :: positions
-               else position :: positions)
-             [] acc_positions
-         else acc_positions)
-       [ initial_pos ] lines)
+  let map =
+    List.fold_left
+      (fun acc_map line ->
+          print_pairs (IntMap.to_list acc_map) ;
+        if String.contains line '^' then
+          let splitters = splitter_set line in
+          List.fold_left
+            (fun acc_map (position, nb_path) ->
+              if splitters |> IntSet.mem position then
+                acc_map
+                |> IntMap.update position (fun opt -> match opt with
+                | None -> invalid_arg "impossible removing a path that is not in the map"
+                | Some n -> Some (max 0 (n - 1)))
+                |> IntMap.update (position - 1)
+                (fun opt -> match opt with | None -> Some 1 ; | Some n -> Some (n + 1))
+                |> IntMap.update (position + 1)
+                (fun opt -> match opt with | None -> Some 1 ; | Some n -> Some (n + 1))
+              else
+                  acc_map)
+            acc_map (acc_map |> IntMap.to_list)
+        else
+            acc_map)
+      (IntMap.empty |> IntMap.add initial_pos 1) lines
+  in
+  List.fold_left
+    (fun acc (pos, nb_paths) -> acc + nb_paths)
+    0 (IntMap.to_list map)
 
 let total_paths file_name =
   match Utils.read_lines file_name with
