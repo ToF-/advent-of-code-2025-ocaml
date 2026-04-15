@@ -62,7 +62,6 @@ let nb_paths initial_pos lines =
   let map =
     List.fold_left
       (fun acc_map line ->
-        print_pairs (IntMap.to_list acc_map);
         if String.contains line '^' then
           let splitters = splitter_set line in
           List.fold_left
@@ -95,4 +94,4 @@ let total_paths file_name =
   | [] -> invalid_arg "empty input file"
   | head :: lines ->
       let initial_pos = find_source head in
-      nb_paths initial_pos (List.take 90 lines)
+      nb_paths initial_pos lines
