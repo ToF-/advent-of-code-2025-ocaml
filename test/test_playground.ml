@@ -8,7 +8,7 @@ let tests =
   "laboratories"
   >::: [
          ( "total splits for sample (A)" >:: fun _ ->
-           assert_equal ~printer:string_of_int 40 (circuit_product sample) );
+             assert_equal ~printer:string_of_int 40 (circuit_product sample 10));
          ( "total splits for input (A)" >:: fun _ ->
-           assert_equal ~printer:string_of_int 0 (circuit_product input) );
+             assert_equal ~printer:string_of_int 79056 (circuit_product input 1000));
        ]

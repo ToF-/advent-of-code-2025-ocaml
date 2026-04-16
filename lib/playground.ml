@@ -92,7 +92,7 @@ let rec uniq circuits =
       if cmp == 0 then uniq (b :: rest)
       else a :: uniq (b :: rest)
 
-let circuit_product file_name =
+let circuit_product file_name limit =
   let lines = Utils.read_lines file_name in
   let boxes =
     List.map
@@ -104,7 +104,7 @@ let circuit_product file_name =
   in
   let map = init_map boxes in
   let distances = List.sort compare (all_product box_distance boxes) in
-  let final_map = connect_boxes map (List.take 10 distances) in
+  let final_map = connect_boxes map (List.take limit distances) in
   let circuits =
     final_map |> CircuitMap.bindings
     |> List.map (fun (k, v) -> v)
