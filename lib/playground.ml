@@ -80,25 +80,50 @@ let rec all_product f list =
 
 let box_distance a b = (distance a b, a, b)
 
+let largest_circuit_size map =
+  let circuits =
+    map |> CircuitMap.bindings |> List.map (fun (k, c) -> Circuit.cardinal c)
+  in
+  List.fold_left max 0 circuits
+
 let all_connected map =
-    let circuits = map |> CircuitMap.bindings |> List.map (fun (k,c) -> c) in
-    let m = circuits |> List.length in
-    circuits |> List.exists (fun c -> c |> Circuit.cardinal == m)
-    
-    
+  let nb_circuits = map |> CircuitMap.bindings |> List.length in
+  largest_circuit_size map == nb_circuits
+
 let connect_boxes map distances =
-  List.fold_left (fun acc (d, a, b) -> connect acc a b) map distances
+  List.fold_left (fun acc (d, a, b) ->
+      let map, pair_opt = acc in
+      match pair_opt with
+      | Some (a, b) -> (map, pair_opt)
+      | None ->
+          let new_map = connect map a b in
+          if all_connected new_map then (new_map, Some (a, b))
+          else (new_map, None))
+  (map, None) distances
 
 let rec uniq circuits =
   match circuits with
   | [] -> []
   | [ a ] -> [ a ]
   | a :: b :: rest ->
-          let cmp = compare (Circuit.to_list a) (Circuit.to_list b) in
-      if cmp == 0 then uniq (b :: rest)
-      else a :: uniq (b :: rest)
+      let cmp = compare (Circuit.to_list a) (Circuit.to_list b) in
+      if cmp == 0 then uniq (b :: rest) else a :: uniq (b :: rest)
 
-let circuit_product file_name limit =
+let circuits boxes limit =
+  let map = init_map boxes in
+  let distances = List.sort compare (all_product box_distance boxes) in
+  let final_map, pair_opt = connect_boxes map (List.take limit distances) in
+  let all_circuits =
+    final_map |> CircuitMap.bindings
+    |> List.map (fun (k, v) -> v)
+    |> List.sort (fun c d -> compare (Circuit.cardinal d) (Circuit.cardinal c))
+    |> List.sort (fun c d -> compare (Circuit.to_list c) (Circuit.to_list d))
+    |> uniq
+    |> List.sort (fun c d -> compare (Circuit.cardinal d) (Circuit.cardinal c))
+  in
+  (all_circuits, pair_opt)
+
+let circuit_product file_name limit option_b =
   let lines = Utils.read_lines file_name in
   let boxes =
     List.map
@@ -108,19 +133,13 @@ let circuit_product file_name limit =
         | _ -> invalid_arg "illegal box value")
       lines
   in
-  let map = init_map boxes in
-  let distances = List.sort compare (all_product box_distance boxes) in
-  let final_map = connect_boxes map (List.take limit distances) in
-  let circuits =
-    final_map |> CircuitMap.bindings
-    |> List.map (fun (k, v) -> v)
-    |> List.sort (fun c d -> compare (Circuit.cardinal d) (Circuit.cardinal c))
-    |> List.sort (fun c d -> compare (Circuit.to_list c) (Circuit.to_list d))
-    |> uniq
-    |> List.sort (fun c d -> compare (Circuit.cardinal d) (Circuit.cardinal c))
-  in
-  match circuits with
-  | a :: b :: c :: _ ->
-          Circuit.cardinal a * Circuit.cardinal b * Circuit.cardinal c
-  | _ ->
-    invalid_arg "not enough circuits"  
+  let all_circuits, pair_opt = circuits boxes limit in
+  if option_b then
+    match pair_opt with
+    | None -> invalid_arg "couldn't connect all boxes"
+    | Some ((px, py, pz), (qx, qy, qz)) -> px * qx
+  else
+    match all_circuits with
+    | a :: b :: c :: _ ->
+        Circuit.cardinal a * Circuit.cardinal b * Circuit.cardinal c
+    | _ -> invalid_arg "not enough circuits"

@@ -1,1 +1,1 @@
-val circuit_product : string -> int -> int
+val circuit_product : string -> int -> bool -> int
