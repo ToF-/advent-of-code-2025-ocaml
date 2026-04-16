@@ -80,6 +80,12 @@ let rec all_product f list =
 
 let box_distance a b = (distance a b, a, b)
 
+let all_connected map =
+    let circuits = map |> CircuitMap.bindings |> List.map (fun (k,c) -> c) in
+    let m = circuits |> List.length in
+    circuits |> List.exists (fun c -> c |> Circuit.cardinal == m)
+    
+    
 let connect_boxes map distances =
   List.fold_left (fun acc (d, a, b) -> connect acc a b) map distances
 
@@ -113,7 +119,6 @@ let circuit_product file_name limit =
     |> uniq
     |> List.sort (fun c d -> compare (Circuit.cardinal d) (Circuit.cardinal c))
   in
-  print_circuits circuits;
   match circuits with
   | a :: b :: c :: _ ->
           Circuit.cardinal a * Circuit.cardinal b * Circuit.cardinal c
