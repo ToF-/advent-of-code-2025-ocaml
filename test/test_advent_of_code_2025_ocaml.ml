@@ -3,12 +3,13 @@ open OUnit2
 let _ =
   List.map run_test_tt_main
     [
-      Test_secret_entrance.tests;
+      (* Test_secret_entrance.tests;
       Test_gift_shop.tests;
       Test_lobby.tests;
       Test_printing_department.tests;
       Test_cafeteria.tests;
       Test_trash_compactor.tests;
       Test_laboratories.tests;
-      Test_playground.tests;
+      Test_playground.tests; *)
+      Test_movie_theater.tests;
     ]

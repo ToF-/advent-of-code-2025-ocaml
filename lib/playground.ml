@@ -91,7 +91,8 @@ let all_connected map =
   largest_circuit_size map == nb_circuits
 
 let connect_boxes map distances =
-  List.fold_left (fun acc (d, a, b) ->
+  List.fold_left
+    (fun acc (d, a, b) ->
       let map, pair_opt = acc in
       match pair_opt with
       | Some (a, b) -> (map, pair_opt)
@@ -99,7 +100,7 @@ let connect_boxes map distances =
           let new_map = connect map a b in
           if all_connected new_map then (new_map, Some (a, b))
           else (new_map, None))
-  (map, None) distances
+    (map, None) distances
 
 let rec uniq circuits =
   match circuits with
