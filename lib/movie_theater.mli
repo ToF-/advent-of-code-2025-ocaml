@@ -1,1 +1,1 @@
-val largest_area : string -> int
+val largest_area : string -> bool -> int
