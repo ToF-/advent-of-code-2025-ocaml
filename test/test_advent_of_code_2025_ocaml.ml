@@ -10,6 +10,7 @@ let _ =
       Test_cafeteria.tests;
       Test_trash_compactor.tests;
       Test_laboratories.tests;
-      Test_playground.tests; *)
-      Test_movie_theater.tests;
+      Test_playground.tests;
+      Test_movie_theater.tests; *)
+      Test_factory.tests;
     ]

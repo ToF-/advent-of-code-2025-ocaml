@@ -19,6 +19,6 @@ let tests =
            assert_equal ~printer:string_of_int 24 (largest_area sample option_b)
          );
          ( "largest area for input (B)" >:: fun _ ->
-           assert_equal ~printer:string_of_int 1479665889 (largest_area input option_b)
-         );
+           assert_equal ~printer:string_of_int 1479665889
+             (largest_area input option_b) );
        ]

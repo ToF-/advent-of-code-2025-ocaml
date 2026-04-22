@@ -10,7 +10,8 @@
   trash_compactor
   laboratories
   playground
-  movie_theater)
+  movie_theater
+  factory)
  (libraries str)
  (preprocess
   (pps ppx_deriving.show ppx_deriving.ord)))
