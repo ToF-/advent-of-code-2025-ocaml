@@ -35,6 +35,15 @@ let switch_light diagram light = diagram lxor (1 lsl light)
 let switch_lights diagram lights =
     List.fold_left switch_light diagram lights
 
+let rec configure length_opt diagram target buttons =
+    match buttons with
+    | [] -> length_opt
+    | button :: rest ->
+            if (switch_lights diagram button) == target
+            then match length_opt with
+            | None -> configure length_opt diagram target rest
+            | Some l -> if 
+    
 
 let button_presses file_name option_b =
     let lines = Utils.read_lines file_name in
