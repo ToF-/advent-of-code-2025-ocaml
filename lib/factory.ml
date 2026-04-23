@@ -4,12 +4,14 @@ type machine = { diagram : int; buttons : int list list; joltage : int list }
 
 let read_diagram s =
   let chars = s |> String.to_seq |> List.of_seq |> List.rev in
-  snd
+  fst
     (List.fold_left
        (fun (value, power2) ch ->
          match ch with
          | '#' -> (value lor power2, power2 * 2)
-         | _ -> (value, power2 * 2))
+         | '.' -> (value, power2 * 2)
+         | _ -> (value, power2)
+       )
        (0, 1) chars)
 
 let read_buttons s =
@@ -63,11 +65,8 @@ let rec press_combo count state target_state combo =
     match combo with
     | [] -> None
     | lights::rest ->
-            Printf.printf "target:%d state:%d lights:" target_state state ;
-            print_int_list lights ;
             let new_state = switch_lights state lights in
-            Printf.printf "target:%d new state:%d\n***\n" target_state new_state ;
-            if new_state == target_state then (Some count) else press_combo (count + 1) new_state target_state rest
+            if new_state == target_state then (Some (count +1)) else press_combo (count + 1) new_state target_state rest
 
 let press_combos target_state combos =
     List.fold_left (fun acc combo ->
@@ -83,6 +82,7 @@ let button_presses file_name option_b =
  List.fold_left (fun acc m ->
      let combos = subpermutations (m.buttons) in
      let count = press_combos m.diagram combos in
+     Printf.printf "%d\n" count; 
      acc + count)
- 0 (List.take 1 machines)
+ 0 (List.take 2 machines)
 
