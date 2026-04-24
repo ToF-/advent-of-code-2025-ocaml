@@ -1,6 +1,51 @@
 open Utils
 
+module SwitchQueue = Pqueue.MakeMin (struct
+  type t = int * int * int
+
+  let compare (p1, _, _) (p2, _, _) = compare p1 p2
+end)
+
+module IntSet = Set.Make (Int)
+
+let print_queue queue =
+  let to_print = SwitchQueue.copy queue in
+  let rec print_queue_aux q =
+    match SwitchQueue.pop_min q with
+    | Some (count, state, switches) ->
+        Printf.printf "(%d--%d--%d) " count state switches 
+    | None ->
+            Printf.printf "\n"
+  in
+  print_queue_aux to_print
+
+let rec search_combo combos visited queue =
+  print_queue queue;
+  match SwitchQueue.pop_min queue with
+  | None -> None
+  | Some (count, state, switches) ->
+      let new_state = state lxor switches in
+      if new_state == 0 then Some count
+      else if visited |> IntSet.mem new_state then
+        search_combo combos visited queue
+      else (
+        List.iter
+          (fun switch_set ->
+            SwitchQueue.add queue (count + 1, new_state, switch_set))
+          combos;
+        let new_visited = visited |> IntSet.add new_state in
+        search_combo combos new_visited queue)
+
 type machine = { diagram : int; buttons : int list; joltage : int }
+
+let min_presses m =
+  let combos = m.buttons in
+  let state = m.diagram in
+  let queue =
+    SwitchQueue.of_list (List.map (fun switches -> (1, state, switches)) combos)
+  in
+  let visited = IntSet.empty in
+  match search_combo combos visited queue with Some count -> count | None -> 0
 
 let read_diagram s =
   let chars = s |> String.to_seq |> List.of_seq in
@@ -33,64 +78,10 @@ let read_machine line =
   let joltage = read_joltage (List.hd (List.rev words)) in
   { diagram; buttons; joltage }
 
-let switch_lights state lights = state lxor lights
-
-let rec delete a = function
-  | [] -> []
-  | x :: xs when x == a -> xs
-  | x :: xs -> List.cons x (delete a xs)
-
-let rec permutations = function
-  | [] -> [ [] ]
-  | xs ->
-      List.flatten
-        (List.map
-           (fun x -> List.map (List.cons x) (permutations (delete x xs)))
-           xs)
-
-let rec sublists = function
-  | [] -> [ [] ]
-  | x :: xs ->
-      let rest = sublists xs in
-      rest @ List.map (fun l -> x :: l) rest
-
-let subpermutations l = List.flatten (List.map permutations (sublists l))
-
-let print_int_list l =
-  Printf.printf "[";
-  List.iter (fun x -> Printf.printf "%d;" x) l;
-  Printf.printf "]\n"
-
-let rec press_combo count state target_state combo =
-  print_int_list combo;
-  match combo with
-  | [] -> None
-  | lights :: rest ->
-      let new_state = switch_lights state lights in
-      if new_state == target_state then Some (count + 1)
-      else press_combo (count + 1) new_state target_state rest
-
-let press_combos target_state combos =
-  List.fold_left
-    (fun acc combo ->
-      let count = press_combo 0 0 target_state combo in
-      match count with None -> acc | Some n -> min acc n)
-    Int.max_int
-    (List.sort (fun a b -> compare (List.length a) (List.length b)) combos)
-
-let print_machine m =
-  Printf.printf "diagram:%d\n" m.diagram;
-  m.buttons |> List.iter (fun bs -> Printf.printf "%d" bs)
-
 let button_presses file_name option_b =
   let lines = Utils.read_lines file_name in
   let machines = List.map read_machine lines in
-  fst
-    (List.fold_left
-       (fun (acc, n) m ->
-         Printf.printf ".%d\n" n;
-         let combos = subpermutations m.buttons in
-         let target_state = m.diagram in
-         let count = press_combos target_state combos in
-         (acc + count, n + 1))
-       (0, 0) machines)
+  List.fold_left
+    (fun acc m -> acc + min_presses m)
+    0
+    machines

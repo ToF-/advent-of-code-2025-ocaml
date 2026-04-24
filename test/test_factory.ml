@@ -11,7 +11,7 @@ let tests =
          ( "fewer button presses for sample (A)" >:: fun _ ->
            assert_equal ~printer:string_of_int 7
              (button_presses sample option_a) );
-        (* ( "fewer button presses for input (A)" >:: fun _ ->
+         (* ( "fewer button presses for input (A)" >:: fun _ ->
            assert_equal ~printer:string_of_int 7 (button_presses input option_a)
          ) *)
        ]
