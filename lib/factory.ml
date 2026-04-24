@@ -20,7 +20,7 @@ let print_queue queue =
   print_queue_aux to_print
 
 let rec search_combo combos visited queue =
-  print_queue queue;
+  (* print_queue queue; *)
   match SwitchQueue.pop_min queue with
   | None -> None
   | Some (count, state, switches) ->
