@@ -109,16 +109,28 @@ let reduce list =
   in
 
   let swap_rows a b =
-    for i = 0 to nb_cols - 1 do
-      let tmp = matrix.(b).(i) in
-      matrix.(b).(i) <- matrix.(a).(i);
-      matrix.(a).(i) <- tmp
+    for col = 0 to nb_cols - 1 do
+      let tmp = matrix.(b).(col) in
+      matrix.(b).(col) <- matrix.(a).(col);
+      matrix.(a).(col) <- tmp
     done
   in
-  if nb_rows > 1 then
-    if matrix.(0).(0) == 0 then (
-      match pivot 0 0 with
-      | None -> ();
-      | Some p -> swap_rows 0 p;
-    );
-      matrix |> Array.to_list |> List.map (fun a -> a |> Array.to_list)
+  let revert_row row =
+    for col = 0 to nb_cols - 1 do
+      matrix.(row).(col) <- -matrix.(row).(col)
+    done
+  in
+  let subtract a b =
+    for col = 0 to nb_cols - 1 do
+      matrix.(a).(col) <- matrix.(a).(col) - matrix.(b).(col)
+    done
+  in
+  (if nb_rows > 1 then
+     if matrix.(0).(0) == 0 then
+       match pivot 0 0 with None -> () | Some p -> swap_rows 0 p);
+  for row = 1 to nb_rows - 1 do
+    if matrix.(row).(0) < 0 then revert_row row;
+    if matrix.(row).(0) > 0 then subtract row 0
+  done;
+
+  matrix |> Array.to_list |> List.map (fun a -> a |> Array.to_list)
