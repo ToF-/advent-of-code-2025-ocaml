@@ -36,6 +36,12 @@ let tests =
            let result = reduce initial in
            print_matrix result;
            assert_equal final result );
+         ( "reducing a 3x4 matrix with pivot in last row" >:: fun _ ->
+           let initial = [ [ 0; 0; 1; 7 ]; [ 0; 1; 0; 2 ]; [ 1; 0; 1; 4 ] ] in
+           let final = [ [ 1; 0; 1; 4 ]; [ 0; 1; 0; 2 ]; [ 0; 0; 1; 7 ] ] in
+           let result = reduce initial in
+           print_matrix result;
+           assert_equal final result );
          ( "reducing a 2x3 matrix already in good form" >:: fun _ ->
            let initial = [ [ 1; 0; 2 ]; [ 0; 1; 7 ] ] in
            let result = reduce initial in

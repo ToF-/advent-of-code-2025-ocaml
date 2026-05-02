@@ -102,6 +102,12 @@ let reduce list =
     |> List.iteri (fun i row ->
         row |> List.iteri (fun j x -> matrix.(i).(j) <- x))
   in
+  let rec pivot col row =
+    if row < nb_rows then
+      if matrix.(row).(col) == 0 then pivot col (row + 1) else Some row
+    else None
+  in
+
   let swap_rows a b =
     for i = 0 to nb_cols - 1 do
       let tmp = matrix.(b).(i) in
@@ -109,7 +115,10 @@ let reduce list =
       matrix.(a).(i) <- tmp
     done
   in
-  if nb_rows > 1 then (
-      if matrix.(0).(0) == 0 then
-      swap_rows 0 1);
-  matrix |> Array.to_list |> List.map (fun a -> a |> Array.to_list)
+  if nb_rows > 1 then
+    if matrix.(0).(0) == 0 then (
+      match pivot 0 0 with
+      | None -> ();
+      | Some p -> swap_rows 0 p;
+    );
+      matrix |> Array.to_list |> List.map (fun a -> a |> Array.to_list)
