@@ -92,3 +92,24 @@ let button_switches button =
   add_switch button 0
 
 let light_joltages joltages = button_switches
+
+let reduce list =
+  let nb_rows = list |> List.length in
+  let nb_cols = list |> List.hd |> List.length in
+  let matrix = Array.make_matrix nb_rows nb_cols 0 in
+  let _ =
+    list
+    |> List.iteri (fun i row ->
+        row |> List.iteri (fun j x -> matrix.(i).(j) <- x))
+  in
+  let swap_rows a b =
+    for i = 0 to nb_cols - 1 do
+      let tmp = matrix.(b).(i) in
+      matrix.(b).(i) <- matrix.(a).(i);
+      matrix.(a).(i) <- tmp
+    done
+  in
+  if nb_rows > 1 then (
+      if matrix.(0).(0) == 0 then
+      swap_rows 0 1);
+  matrix |> Array.to_list |> List.map (fun a -> a |> Array.to_list)

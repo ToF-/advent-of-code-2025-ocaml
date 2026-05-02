@@ -6,6 +6,15 @@ let tests =
   let input = "../testdata/day10_input.txt" in
   let button_presses = Advent_of_code_2025.Factory.button_presses in
   let button_switches = Advent_of_code_2025.Factory.button_switches in
+  let reduce = Advent_of_code_2025.Factory.reduce in
+  let print_matrix m =
+    Printf.printf "\n";
+    m
+    |> List.iter (fun row ->
+        row |> List.iter (fun x -> Printf.printf "%d " x);
+        Printf.printf "\n")
+  in
+
   Printf.printf "day 10: factory\n";
   "factory"
   >::: [
@@ -17,4 +26,36 @@ let tests =
              (button_presses input option_a) );
          ( "switches command of a button" >:: fun _ ->
            assert_equal [ 0; 4; 5 ] (button_switches (1 + 16 + 32)) );
+         ( "reducing a trivial matrix" >:: fun _ ->
+           let initial = [ [ 1; 7 ] ] in
+           let final = [ [ 1; 7 ] ] in
+           assert_equal final (reduce initial) );
+         ( "reducing a 2x3 matrix" >:: fun _ ->
+           let initial = [ [ 0; 1; 7 ]; [ 1; 0; 2 ] ] in
+           let final = [ [ 1; 0; 2 ]; [ 0; 1; 7 ] ] in
+           let result = reduce initial in
+           print_matrix result;
+           assert_equal final result );
+         ( "reducing a 2x3 matrix already in good form" >:: fun _ ->
+           let initial = [ [ 1; 0; 2 ]; [ 0; 1; 7 ] ] in
+           let result = reduce initial in
+           assert_equal initial result );
+         (* ( "reducing a matrix" >:: fun _ ->
+           let initial =
+             [
+               [ 0; 0; 1; 1; 3 ];
+               [ 1; 0; 1; 0; 4 ];
+               [ 0; 0; 0; 1; 5 ];
+               [ 1; 1; 1; 0; 7 ];
+             ]
+           in
+           let final =
+             [
+               [ 1; 0; 1; 0; 4 ];
+               [ 0; 1; 0; 0; 3 ];
+               [ 0; 0; 1; 1; 3 ];
+               [ 0; 0; 0; 1; 5 ];
+             ]
+           in
+           assert_equal final (reduce initial) ); *)
        ]
