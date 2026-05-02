@@ -37,21 +37,47 @@ let tests =
            print_matrix result;
            assert_equal final result );
          ( "reducing a 3x4 matrix with pivot in last row" >:: fun _ ->
-           let initial = [ [ 0; 0; 1; 7 ]; [ 0; 1; 0; 2 ]; [ 1; 0; 1; 4 ] ] in
-           let final = [ [ 1; 0; 1; 4 ]; [ 0; 1; 0; 2 ]; [ 0; 0; 1; 7 ] ] in
+           let initial = [ [ 0; 0; 1; 2 ]; [ 0; 1; 1; 3 ]; [ 1; 0; 0; 4 ] ] in
+           let final = [ [ 1; 0; 0; 4 ]; [ 0; 1; 1; 3 ]; [ 0; 0; 1; 2 ] ] in
            let result = reduce initial in
+           print_matrix initial;
+           Printf.printf "->";
            print_matrix result;
            assert_equal final result );
          ( "reducing a 3x4 matrix with non zero value in last row" >:: fun _ ->
-           let initial = [ [ 0; 0; 1; 7 ]; [ 1; 0; 1; 4 ]; [ 1; 1; 0; 2 ] ] in
-           let final = [ [ 1; 0; 1; 4 ]; [ 0; 0; 1; 7 ]; [ 0; 1; -1; -2 ] ] in
+           let initial = [ [ 0; 1; 0; 7 ]; [ 1; 0; 0; 4 ]; [ 1; 0; 1; 8 ] ] in
+           let final = [ [ 1; 0; 0; 4 ]; [ 0; 1; 0; 7 ]; [ 0; 0; 1; 4 ] ] in
            let result = reduce initial in
+           print_matrix initial;
+           Printf.printf "->";
            print_matrix result;
            assert_equal final result );
          ( "reducing a 2x3 matrix already in good form" >:: fun _ ->
            let initial = [ [ 1; 0; 2 ]; [ 0; 1; 7 ] ] in
            let result = reduce initial in
            assert_equal initial result );
+         ( "reducing a 4x5 matrix column after column" >:: fun _ ->
+           let initial =
+             [
+               [ 1; 1; 1; 1; 4 ];
+               [ 0; 0; 1; 1; 5 ];
+               [ 0; 1; 1; 1; 3 ];
+               [ 0; 0; 0; 1; 1 ];
+             ]
+           in
+           let final =
+             [
+               [ 1; 1; 1; 1; 4 ];
+               [ 0; 1; 1; 1; 3 ];
+               [ 0; 0; 1; 1; 5 ];
+               [ 0; 0; 0; 1; 1 ];
+             ]
+           in
+           let result = reduce initial in
+           print_matrix initial;
+           Printf.printf "->";
+           print_matrix result;
+           assert_equal final result );
          (* ( "reducing a matrix" >:: fun _ ->
            let initial =
              [

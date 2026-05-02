@@ -102,6 +102,15 @@ let reduce list =
     |> List.iteri (fun i row ->
         row |> List.iteri (fun j x -> matrix.(i).(j) <- x))
   in
+  let print_matrix () =
+    Printf.printf "matrix\n";
+    for row = 0 to nb_rows - 1 do
+      for col = 0 to nb_cols - 1 do
+        Printf.printf "%d " matrix.(row).(col)
+      done;
+      Printf.printf "\n"
+    done
+  in
   let rec pivot col row =
     if row < nb_rows then
       if matrix.(row).(col) == 0 then pivot col (row + 1) else Some row
@@ -109,6 +118,7 @@ let reduce list =
   in
 
   let swap_rows a b =
+      Printf.printf "swap\n";
     for col = 0 to nb_cols - 1 do
       let tmp = matrix.(b).(col) in
       matrix.(b).(col) <- matrix.(a).(col);
@@ -125,12 +135,17 @@ let reduce list =
       matrix.(a).(col) <- matrix.(a).(col) - matrix.(b).(col)
     done
   in
-  (if nb_rows > 1 then
-     if matrix.(0).(0) == 0 then
-       match pivot 0 0 with None -> () | Some p -> swap_rows 0 p);
-  for row = 1 to nb_rows - 1 do
-    if matrix.(row).(0) < 0 then revert_row row;
-    if matrix.(row).(0) > 0 then subtract row 0
-  done;
-
+  if nb_rows > 1 then
+    for d = 0 to nb_rows - 2 do
+        print_matrix ();
+      Printf.printf "%d\n" d;
+      if matrix.(d).(d) == 0 then
+        match pivot d d with None -> () | Some p -> swap_rows d p
+      else ();
+      for row = d + 1 to nb_rows - 1 do
+        if matrix.(row).(d) < 0 then revert_row row;
+        if matrix.(row).(d) > 0 then subtract row d
+      done;
+    Printf.printf "done with col %d\n" d;
+    done;
   matrix |> Array.to_list |> List.map (fun a -> a |> Array.to_list)
