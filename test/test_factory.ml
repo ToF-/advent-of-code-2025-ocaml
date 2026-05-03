@@ -101,4 +101,26 @@ let tests =
            Printf.printf "->";
            print_matrix result;
            assert_equal final result );
+         ( "reducing a 4x7 matrix partially" >:: fun _ ->
+           let initial =
+             [
+               [ 1; 1; 1; 1; 1; 0; 4 ];
+               [ 0; 0; 1; 1; 1; 1; 5 ];
+               [ 0; 1; 1; 1; 1; 0; 3 ];
+               [ 0; 0; 0; 1; 1; 0; 1 ];
+             ]
+           in
+           let final =
+             [
+               [ 1; 1; 1; 1; 1; 0; 4 ];
+               [ 0; 1; 1; 1; 1; 0; 3 ];
+               [ 0; 0; 1; 1; 1; 1; 5 ];
+               [ 0; 0; 0; 1; 1; 0; 1 ];
+             ]
+           in
+           let result = reduce initial in
+           print_matrix initial;
+           Printf.printf "->";
+           print_matrix result;
+           assert_equal final result );
        ]
