@@ -156,19 +156,17 @@ let reduce matrix =
       done;
       Printf.printf "done with col %d\n" d
     done;
-    matrix
+  matrix
 
-let solve matrix = 
-    let nb_rows = matrix |> Array.length in
-    let nb_cols = matrix.(0) |> Array.length in
-    let solution = Array.make nb_rows 0 in
-    let target s = matrix.(s).(nb_cols - 1) in
-    for row = nb_rows - 1 downto 0 do
-        solution.(row) <— target row ;
-        for col = nb_cols - 2 downto row do
-            solution.(row) <- solution.(row) - matrix.(row).(col) * (target row)
-            
-        solution.(d) <- target d - matrix.(d).(d)
-
+let solve matrix =
+  let nb_rows = matrix |> Array.length in
+  let nb_cols = matrix.(0) |> Array.length in
+  let variable = Array.make nb_rows 0 in
+  let target s = matrix.(s).(nb_cols - 1) in
+  for row = nb_rows - 1 downto 0 do
+    variable.(row) <- target row;
+    for col = nb_cols - 2 downto row + 1 do
+        variable.(row) <- variable.(row) - matrix.(row).(col) * variable.(col);
     done
-
+  done;
+  List.fold_left (+) 0 (variable |> Array.to_list)

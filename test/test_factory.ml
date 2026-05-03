@@ -6,11 +6,14 @@ let tests =
   let input = "../testdata/day10_input.txt" in
   let button_presses = Advent_of_code_2025.Factory.button_presses in
   let button_switches = Advent_of_code_2025.Factory.button_switches in
-  let reduce list = 
-      let matrix = Advent_of_code_2025.Factory.list_to_matrix list in
-      let reduced = Advent_of_code_2025.Factory.reduce matrix in
-      Advent_of_code_2025.Factory.matrix_to_list reduced
-    in 
+  let reduce list =
+    let matrix = Advent_of_code_2025.Factory.list_to_matrix list in
+    let reduced = Advent_of_code_2025.Factory.reduce matrix in
+    Advent_of_code_2025.Factory.matrix_to_list reduced
+  in
+  let solve list =
+      Advent_of_code_2025.Factory.solve (Advent_of_code_2025.Factory.list_to_matrix list)
+  in
   let print_matrix m =
     Printf.printf "\n";
     m
@@ -127,7 +130,7 @@ let tests =
            Printf.printf "->";
            print_matrix result;
            assert_equal final result );
-           ( "solving a simple matrix" >:: fun _ ->
-               let matrix =[[1; 0; 1; 7]; [0; 1; 1; 4]; [0; 0; 1; 3]] in
-               assert_equal 8 (solve matrix));
+         ( "solving a simple matrix" >:: fun _ ->
+           let m = [ [ 1; 0; 1; 7 ]; [ 0; 1; 1; 4 ]; [ 0; 0; 1; 3 ] ] in
+           assert_equal 8 (solve m));
        ]
