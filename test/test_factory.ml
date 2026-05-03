@@ -6,7 +6,11 @@ let tests =
   let input = "../testdata/day10_input.txt" in
   let button_presses = Advent_of_code_2025.Factory.button_presses in
   let button_switches = Advent_of_code_2025.Factory.button_switches in
-  let reduce = Advent_of_code_2025.Factory.reduce in
+  let reduce list = 
+      let matrix = Advent_of_code_2025.Factory.list_to_matrix list in
+      let reduced = Advent_of_code_2025.Factory.reduce matrix in
+      Advent_of_code_2025.Factory.matrix_to_list reduced
+    in 
   let print_matrix m =
     Printf.printf "\n";
     m

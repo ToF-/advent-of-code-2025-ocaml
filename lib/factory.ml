@@ -93,7 +93,7 @@ let button_switches button =
 
 let light_joltages joltages = button_switches
 
-let reduce list =
+let list_to_matrix list =
   let nb_rows = list |> List.length in
   let nb_cols = list |> List.hd |> List.length in
   let matrix = Array.make_matrix nb_rows nb_cols 0 in
@@ -102,6 +102,14 @@ let reduce list =
     |> List.iteri (fun i row ->
         row |> List.iteri (fun j x -> matrix.(i).(j) <- x))
   in
+  matrix
+
+let matrix_to_list matrix =
+  matrix |> Array.to_list |> List.map (fun a -> a |> Array.to_list)
+
+let reduce matrix =
+  let nb_rows = matrix |> Array.length in
+  let nb_cols = matrix.(0) |> Array.length in
   let print_matrix () =
     Printf.printf "matrix\n";
     for row = 0 to nb_rows - 1 do
@@ -148,4 +156,5 @@ let reduce list =
       done;
       Printf.printf "done with col %d\n" d
     done;
-  matrix |> Array.to_list |> List.map (fun a -> a |> Array.to_list)
+    matrix
+
