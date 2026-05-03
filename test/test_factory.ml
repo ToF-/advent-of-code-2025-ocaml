@@ -52,6 +52,29 @@ let tests =
            Printf.printf "->";
            print_matrix result;
            assert_equal final result );
+         ( "reducing a 4x5 matrix with a negative pivot" >:: fun _ ->
+           let initial =
+             [
+               [ 1; 0; 1; 1; 4 ];
+               [ 0; 1; 1; 1; 5 ];
+               [ 0; 1; 0; 1; 2 ];
+               [ 0; 0; 0; 1; 3 ];
+             ]
+           in
+           let final =
+             [
+               [ 1; 0; 1; 1; 4 ];
+               [ 0; 1; 1; 1; 5 ];
+               [ 0; 0; 1; 0; 3 ];
+               [ 0; 0; 0; 1; 3 ];
+             ]
+           in
+           let result = reduce initial in
+           print_matrix initial;
+           Printf.printf "->";
+           print_matrix result;
+           Printf.printf "\n";
+           assert_equal final result );
          ( "reducing a 2x3 matrix already in good form" >:: fun _ ->
            let initial = [ [ 1; 0; 2 ]; [ 0; 1; 7 ] ] in
            let result = reduce initial in
@@ -78,22 +101,4 @@ let tests =
            Printf.printf "->";
            print_matrix result;
            assert_equal final result );
-         (* ( "reducing a matrix" >:: fun _ ->
-           let initial =
-             [
-               [ 0; 0; 1; 1; 3 ];
-               [ 1; 0; 1; 0; 4 ];
-               [ 0; 0; 0; 1; 5 ];
-               [ 1; 1; 1; 0; 7 ];
-             ]
-           in
-           let final =
-             [
-               [ 1; 0; 1; 0; 4 ];
-               [ 0; 1; 0; 0; 3 ];
-               [ 0; 0; 1; 1; 3 ];
-               [ 0; 0; 0; 1; 5 ];
-             ]
-           in
-           assert_equal final (reduce initial) ); *)
        ]

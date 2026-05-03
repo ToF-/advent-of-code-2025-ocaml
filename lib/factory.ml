@@ -118,7 +118,7 @@ let reduce list =
   in
 
   let swap_rows a b =
-      Printf.printf "swap\n";
+    Printf.printf "swap\n";
     for col = 0 to nb_cols - 1 do
       let tmp = matrix.(b).(col) in
       matrix.(b).(col) <- matrix.(a).(col);
@@ -137,15 +137,15 @@ let reduce list =
   in
   if nb_rows > 1 then
     for d = 0 to nb_rows - 2 do
-        print_matrix ();
+      print_matrix ();
       Printf.printf "%d\n" d;
       if matrix.(d).(d) == 0 then
         match pivot d d with None -> () | Some p -> swap_rows d p
-      else ();
+      else if matrix.(d).(d) < 0 then revert_row d;
       for row = d + 1 to nb_rows - 1 do
         if matrix.(row).(d) < 0 then revert_row row;
         if matrix.(row).(d) > 0 then subtract row d
       done;
-    Printf.printf "done with col %d\n" d;
+      Printf.printf "done with col %d\n" d
     done;
   matrix |> Array.to_list |> List.map (fun a -> a |> Array.to_list)
