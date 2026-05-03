@@ -158,3 +158,17 @@ let reduce matrix =
     done;
     matrix
 
+let solve matrix = 
+    let nb_rows = matrix |> Array.length in
+    let nb_cols = matrix.(0) |> Array.length in
+    let solution = Array.make nb_rows 0 in
+    let target s = matrix.(s).(nb_cols - 1) in
+    for row = nb_rows - 1 downto 0 do
+        solution.(row) <— target row ;
+        for col = nb_cols - 2 downto row do
+            solution.(row) <- solution.(row) - matrix.(row).(col) * (target row)
+            
+        solution.(d) <- target d - matrix.(d).(d)
+
+    done
+

@@ -127,4 +127,7 @@ let tests =
            Printf.printf "->";
            print_matrix result;
            assert_equal final result );
+           ( "solving a simple matrix" >:: fun _ ->
+               let matrix =[[1; 0; 1; 7]; [0; 1; 1; 4]; [0; 0; 1; 3]] in
+               assert_equal 8 (solve matrix));
        ]
