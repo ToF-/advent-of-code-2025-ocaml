@@ -12,7 +12,8 @@ let tests =
     Advent_of_code_2025.Factory.matrix_to_list reduced
   in
   let solve list =
-      Advent_of_code_2025.Factory.solve (Advent_of_code_2025.Factory.list_to_matrix list)
+    Advent_of_code_2025.Factory.solve
+      (Advent_of_code_2025.Factory.list_to_matrix list)
   in
   let print_matrix m =
     Printf.printf "\n";
@@ -132,5 +133,5 @@ let tests =
            assert_equal final result );
          ( "solving a simple matrix" >:: fun _ ->
            let m = [ [ 1; 0; 1; 7 ]; [ 0; 1; 1; 4 ]; [ 0; 0; 1; 3 ] ] in
-           assert_equal 8 (solve m));
+           assert_equal ~printer:string_of_int 8 (solve m) );
        ]

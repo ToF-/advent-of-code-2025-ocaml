@@ -158,15 +158,42 @@ let reduce matrix =
     done;
   matrix
 
+let print_array a =
+  Printf.printf "|";
+  Array.iter (fun x -> Printf.printf "%d;" x) a;
+  Printf.printf "|\n"
+
+let print_list l =
+  Printf.printf "[";
+  List.iter (fun x -> Printf.printf "%d;" x) l;
+  Printf.printf "]\n"
+
 let solve matrix =
   let nb_rows = matrix |> Array.length in
   let nb_cols = matrix.(0) |> Array.length in
   let variable = Array.make nb_rows 0 in
   let target s = matrix.(s).(nb_cols - 1) in
-  for row = nb_rows - 1 downto 0 do
-    variable.(row) <- target row;
-    for col = nb_cols - 2 downto row + 1 do
-        variable.(row) <- variable.(row) - matrix.(row).(col) * variable.(col);
-    done
-  done;
-  List.fold_left (+) 0 (variable |> Array.to_list)
+  let rows = List.init nb_rows (fun i -> i) |> List.rev in
+  List.iter
+    (fun row ->
+      Printf.printf "row:%d\n" row;
+      variable.(row) <- target row;
+      print_array variable;
+      let cols =
+        List.init (nb_rows - 1 - row) (fun i -> row + i + 1) |> List.rev
+      in
+      print_list cols;
+          variable.(row) <- target row;
+      List.iter
+        (fun col ->
+            Printf.printf "col:%d\n" col;
+          print_array variable;
+          Printf.printf "subtract m[%d][%d] %d\n" row col
+            (matrix.(row).(col) * variable.(col));
+          let v = matrix.(row).(col) * variable.(col) in
+          Printf.printf "subtract %d to %d\n" v variable.(row) ;
+          variable.(row) <- variable.(row) - v;
+          print_array variable)
+        cols)
+    rows;
+  List.fold_left ( + ) 0 (variable |> Array.to_list)
