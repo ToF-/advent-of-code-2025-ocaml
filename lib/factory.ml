@@ -168,32 +168,31 @@ let print_list l =
   List.iter (fun x -> Printf.printf "%d;" x) l;
   Printf.printf "]\n"
 
+
 let solve matrix =
   let nb_rows = matrix |> Array.length in
   let nb_cols = matrix.(0) |> Array.length in
-  let variable = Array.make nb_rows 0 in
-  let target s = matrix.(s).(nb_cols - 1) in
-  let rows = List.init nb_rows (fun i -> i) |> List.rev in
-  List.iter
-    (fun row ->
-      Printf.printf "row:%d\n" row;
-      variable.(row) <- target row;
+  let variable = Array.make nb_cols 0 in
+  let target row = matrix.(row).(nb_cols - 1) in
+  let rec solve_cell acc row col =
+      Printf.printf "acc:%d row:%d col:%d \n" acc row col;
       print_array variable;
-      let cols =
-        List.init (nb_rows - 1 - row) (fun i -> row + i + 1) |> List.rev
-      in
-      print_list cols;
-          variable.(row) <- target row;
-      List.iter
-        (fun col ->
-            Printf.printf "col:%d\n" col;
-          print_array variable;
-          Printf.printf "subtract m[%d][%d] %d\n" row col
-            (matrix.(row).(col) * variable.(col));
-          let v = matrix.(row).(col) * variable.(col) in
-          Printf.printf "subtract %d to %d\n" v variable.(row) ;
-          variable.(row) <- variable.(row) - v;
-          print_array variable)
-        cols)
-    rows;
-  List.fold_left ( + ) 0 (variable |> Array.to_list)
+      if row < 0 || col < 0 then
+          Some (variable |> Array.to_list |> List.fold_left (fun acc x -> acc + x) 0)
+        else
+      if col == row then (
+          let new_acc = acc - matrix.(row).(col) in
+          variable.(col) <- new_acc;
+          if row > 0 then solve_cell (target (row - 1)) (row - 1) (nb_cols - 1)
+          else Some (variable |> Array.to_list |> List.fold_left (fun acc x -> acc + x) 0)
+      ) else (
+          let new_acc = acc - matrix.(row).(col) in
+          variable.(col) <- new_acc;
+          if row > 0 then solve_cell (target (row - 1)) (row - 1) (nb_cols - 1)
+          else Some (variable |> Array.to_list |> List.fold_left (fun acc x -> acc + x) 0)
+      )
+    in
+    match solve_cell (target (nb_rows - 1)) (nb_rows - 1) (nb_cols - 2) with
+    | None -> 0
+    | Some n -> n
+  

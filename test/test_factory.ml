@@ -134,4 +134,9 @@ let tests =
          ( "solving a simple matrix" >:: fun _ ->
            let m = [ [ 1; 0; 1; 7 ]; [ 0; 1; 1; 4 ]; [ 0; 0; 1; 3 ] ] in
            assert_equal ~printer:string_of_int 8 (solve m) );
+         ( "solving an extended matrix" >:: fun _ ->
+           let m =
+             [ [ 1; 0; 0; 1; 7 ]; [ 0; 1; 1; 1; 8 ]; [ 0; 0; 1; 1; 5 ] ]
+           in
+           assert_equal ~printer:string_of_int 10 (solve m) );
        ]
