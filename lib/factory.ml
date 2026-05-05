@@ -1,4 +1,5 @@
 open Utils
+open Printf
 
 module SwitchQueue = Pqueue.MakeMin (struct
   type t = int * int * int
@@ -175,22 +176,41 @@ let solve matrix =
   let variable = Array.init nb_cols (fun _ -> 0) in
 
   let rec solve_cell row col =
-      print_array variable ;
-    if row < 0 then variable |> Array.fold_left (fun acc v -> acc + v) 0
-    else (match compare col row with
-    | -1 -> solve_cell (row - 1) (nb_cols - 2)
-    | 0 -> variable.(col) <- target row;
-      for i = nb_cols - 2 downto col+1 do
-        variable.(col) <- variable.(col) - (matrix.(row).(i) * variable.(i))
-      done;
-      solve_cell (row - 1) (nb_cols - 2)
-    | _ -> let limit = (target row) - variable.(col + 1) in
-    let indices = List.init (limit + 1) (fun i -> limit - i) in
-    let results = List.map (fun v ->
-      for i = nb_cols - 2 downto col+1 do
-          variable.(col) <- variable.(col) - (matrix.(row).(i) * if i == col then v else variable.(i))
-      done;
-        solve_cell row (col - 1)) indices
-    in 
-    List.fold_left (fun acc result -> min acc result) 100000000 results)
-  in solve_cell (nb_rows - 1) (nb_cols - 2)
+    printf "row:%d col:%d " row col;
+    print_array variable;
+    if row < 0 then (
+      printf "done\n\n";
+      variable |> Array.fold_left (fun acc v -> acc + v) 0)
+    else
+      match compare col row with
+      | -1 ->
+          printf "next row\n";
+          solve_cell (row - 1) (nb_cols - 2)
+      | 0 ->
+          printf "diagonal\n";
+          variable.(col) <- target row;
+          for i = nb_cols - 2 downto col + 1 do
+            variable.(col) <- variable.(col) - (matrix.(row).(i) * variable.(i))
+          done;
+          solve_cell (row - 1) (col - 1)
+      | _ ->
+          printf "variable\n";
+          let limit = target row - variable.(col + 1) in
+          let indices = List.init (limit + 1) (fun i -> limit - i) in
+          let results =
+            List.map
+              (fun v ->
+                variable.(col) <- target row;
+                for i = nb_cols - 2 downto col do
+                  variable.(col) <-
+                    (variable.(col)
+                    - (matrix.(row).(i) * if i == col then v else variable.(i))
+                    )
+                done;
+                printf "trying V[%d] = %d " col v;
+                solve_cell row (col - 1))
+              indices
+          in
+          List.fold_left (fun acc result -> min acc result) 100000000 results
+  in
+  solve_cell (nb_rows - 1) (nb_cols - 2)
