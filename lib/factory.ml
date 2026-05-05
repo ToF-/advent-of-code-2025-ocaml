@@ -171,19 +171,26 @@ let print_list l =
 let solve matrix =
   let nb_rows = matrix |> Array.length in
   let nb_cols = matrix.(0) |> Array.length in
-  let variable = Array.init nb_cols (fun _ -> 0) in
   let target row = matrix.(row).(nb_cols - 1) in
+  let variable = Array.init nb_cols (fun _ -> 0) in
 
   let rec solve_cell row col =
       print_array variable ;
     if row < 0 then variable |> Array.fold_left (fun acc v -> acc + v) 0
-    else if col < row then solve_cell (row - 1) (nb_cols - 2)
-    else if col = row then (
-      variable.(col) <- target row;
+    else (match compare col row with
+    | -1 -> solve_cell (row - 1) (nb_cols - 2)
+    | 0 -> variable.(col) <- target row;
       for i = nb_cols - 2 downto col+1 do
         variable.(col) <- variable.(col) - (matrix.(row).(i) * variable.(i))
       done;
-      solve_cell (row - 1) (nb_cols - 2))
-    else solve_cell row (col - 1)
-  in
-  solve_cell (nb_rows - 1) (nb_cols - 2)
+      solve_cell (row - 1) (nb_cols - 2)
+    | _ -> let limit = (target row) - variable.(col + 1) in
+    let indices = List.init (limit + 1) (fun i -> limit - i) in
+    let results = List.map (fun v ->
+      for i = nb_cols - 2 downto col+1 do
+          variable.(col) <- variable.(col) - (matrix.(row).(i) * if i == col then v else variable.(i))
+      done;
+        solve_cell row (col - 1)) indices
+    in 
+    List.fold_left (fun acc result -> min acc result) 100000000 results)
+  in solve_cell (nb_rows - 1) (nb_cols - 2)
