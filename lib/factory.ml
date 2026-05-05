@@ -168,31 +168,22 @@ let print_list l =
   List.iter (fun x -> Printf.printf "%d;" x) l;
   Printf.printf "]\n"
 
-
 let solve matrix =
   let nb_rows = matrix |> Array.length in
   let nb_cols = matrix.(0) |> Array.length in
-  let variable = Array.make nb_cols 0 in
+  let variable = Array.init nb_cols (fun _ -> 0) in
   let target row = matrix.(row).(nb_cols - 1) in
-  let rec solve_cell acc row col =
-      Printf.printf "acc:%d row:%d col:%d \n" acc row col;
-      print_array variable;
-      if row < 0 || col < 0 then
-          Some (variable |> Array.to_list |> List.fold_left (fun acc x -> acc + x) 0)
-        else
-      if col == row then (
-          let new_acc = acc - matrix.(row).(col) in
-          variable.(col) <- new_acc;
-          if row > 0 then solve_cell (target (row - 1)) (row - 1) (nb_cols - 1)
-          else Some (variable |> Array.to_list |> List.fold_left (fun acc x -> acc + x) 0)
-      ) else (
-          let new_acc = acc - matrix.(row).(col) in
-          variable.(col) <- new_acc;
-          if row > 0 then solve_cell (target (row - 1)) (row - 1) (nb_cols - 1)
-          else Some (variable |> Array.to_list |> List.fold_left (fun acc x -> acc + x) 0)
-      )
-    in
-    match solve_cell (target (nb_rows - 1)) (nb_rows - 1) (nb_cols - 2) with
-    | None -> 0
-    | Some n -> n
-  
+
+  let rec solve_cell row col =
+      print_array variable ;
+    if row < 0 then variable |> Array.fold_left (fun acc v -> acc + v) 0
+    else if col < row then solve_cell (row - 1) (nb_cols - 2)
+    else if col = row then (
+      variable.(col) <- target row;
+      for i = nb_cols - 2 downto col+1 do
+        variable.(col) <- variable.(col) - (matrix.(row).(i) * variable.(i))
+      done;
+      solve_cell (row - 1) (nb_cols - 2))
+    else solve_cell row (col - 1)
+  in
+  solve_cell (nb_rows - 1) (nb_cols - 2)
