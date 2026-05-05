@@ -139,4 +139,21 @@ let tests =
              [ [ 1; 0; 0; 1; 7 ]; [ 0; 1; 1; 1; 8 ]; [ 0; 0; 1; 1; 5 ] ]
            in
            assert_equal ~printer:string_of_int 10 (solve m) );
+         ( "solving an extended extended matrix" >:: fun _ ->
+           let m =
+             [
+               [ 1; 0; 0; 1; 1; 7 ]; [ 0; 1; 1; 1; 0; 8 ]; [ 0; 0; 1; 1; 1; 9 ];
+             ]
+           in
+           assert_equal ~printer:string_of_int 9 (solve m) );
+         ( "solving an extended matrix from the sample" >:: fun _ ->
+           let m =
+             [
+               [ 1; 1; 0; 1; 0; 0; 7 ];
+               [ 0; 1; 0; 0; 0; 1; 5 ];
+               [ 0; 0; 1; 1; 1; 0; 4 ];
+               [ 0; 0; 0; 0; 1; 1; 3 ];
+             ]
+           in
+           assert_equal ~printer:string_of_int 10 (solve m) );
        ]

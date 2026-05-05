@@ -188,11 +188,32 @@ let solve matrix =
           solve_cell (row - 1) (nb_cols - 2)
       | 0 ->
           printf "diagonal\n";
-          variable.(col) <- target row;
-          for i = nb_cols - 2 downto col + 1 do
-            variable.(col) <- variable.(col) - (matrix.(row).(i) * variable.(i))
-          done;
-          solve_cell (row - 1) (col - 1)
+          if matrix.(row).(col) > 0 then (
+            variable.(col) <- target row;
+            for i = nb_cols - 2 downto col + 1 do
+              variable.(col) <-
+                variable.(col) - (matrix.(row).(i) * variable.(i))
+            done;
+            if variable.(col) < 0 then 1000000000
+            else solve_cell (row - 1) (col - 1))
+          else
+            let limit = target row - variable.(col + 1) in
+            let indices = List.init (limit + 1) (fun i -> limit - i) in
+            let results =
+              List.map
+                (fun v ->
+                  variable.(col) <- target row;
+                  for i = nb_cols - 2 downto col do
+                    variable.(col) <-
+                      (variable.(col)
+                      - (matrix.(row).(i) * if i == col then v else variable.(i))
+                      )
+                  done;
+                  if variable.(col) < 0 then 1000000000
+                  else solve_cell row (col - 1))
+                indices
+            in
+            List.fold_left (fun acc result -> min acc result) 1000000000 results
       | _ ->
           printf "variable\n";
           let limit = target row - variable.(col + 1) in
@@ -207,10 +228,10 @@ let solve matrix =
                     - (matrix.(row).(i) * if i == col then v else variable.(i))
                     )
                 done;
-                printf "trying V[%d] = %d " col v;
-                solve_cell row (col - 1))
+                if variable.(col) < 0 then 1000000000
+                else solve_cell row (col - 1))
               indices
           in
-          List.fold_left (fun acc result -> min acc result) 100000000 results
+          List.fold_left (fun acc result -> min acc result) 1000000000 results
   in
   solve_cell (nb_rows - 1) (nb_cols - 2)
