@@ -191,21 +191,44 @@ let solve matrix =
   in
   let get variable col = variable |> IntMap.find_opt col in
 
+  let check_matrix variable =
+    let total row =
+      List.fold_left
+        (fun acc i ->
+          let coeff = matrix.(row).(i) in
+          let value =
+            match get variable i with None -> impossible | Some v -> coeff * v
+          in
+          acc + value)
+        0
+        (List.init (cols - 1) (fun i -> i))
+    in
+    List.fold_left
+      (fun acc row ->
+        let check = total row == sums row in
+        acc && check)
+      true
+      (List.init rows (fun i -> i))
+  in
+
   let rec solve_at_cell sum variable row col =
     if sum < 0 then impossible
-    else if row < 0 then (
-      let result = IntMap.fold (fun _ v acc -> acc + v) variable 0 in
-      printf "result:%d\n" result;
-      result)
+    else if row < 0 then
+      if check_matrix variable then (
+        let result = IntMap.fold (fun _ v acc -> acc + v) variable 0 in
+        printf "result:%d\n" result;
+        result)
+      else impossible
     else if col < row then
       if sum != 0 then impossible
       else solve_at_cell (sums (row - 1)) variable (row - 1) (cols - 2)
     else if col == row then
       let k = matrix.(row).(col) in
-      if k == 1 then
+      if k == 1 then (
+        printf "V[%d]=%d\n" col sum;
         solve_at_cell
           (sums (row - 1))
-          (update variable col sum) (row - 1) (cols - 2)
+          (update variable col sum) (row - 1) (cols - 2))
       else (
         assert (k == 0);
         if sum == 0 then impossible
@@ -214,7 +237,7 @@ let solve matrix =
       let k = matrix.(row).(col) in
       match get variable col with
       | Some v -> solve_at_cell (sum - (k * v)) variable row (col - 1)
-      | None ->
+      | None when k > 0 ->
           let values = List.init (sum + 1) (fun i -> sum - i) in
           let results =
             values
@@ -226,5 +249,6 @@ let solve matrix =
                   (update variable col v) row (col - 1))
           in
           results |> List.fold_left (fun acc r -> min acc r) impossible
+      | None -> solve_at_cell sum variable row (col - 1)
   in
   solve_at_cell matrix.(rows - 1).(cols - 1) variable (rows - 1) (cols - 2)
