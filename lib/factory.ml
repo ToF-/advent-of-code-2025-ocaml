@@ -173,93 +173,46 @@ module IntMap = Map.Make (Int)
 
 let impossible = 1000000000
 
+let print_map m =
+  let l = IntMap.to_list m in
+  l |> List.iter (fun (k, v) -> printf "V[%d]=%d\t" k v);
+  printf "\n"
+
 let solve matrix =
   let rows = matrix |> Array.length in
   let cols = matrix.(0) |> Array.length in
+  let sums row = if row >= 0 then matrix.(row).(cols - 1) else 0 in
   let variable = IntMap.empty in
   let rec solve_at_cell sum variable row col =
-    if col < 0 then
+    print_map variable;
+    printf "sum:%d row:%d col:%d\n" sum row col;
+    if row < 0 then
+        IntMap.fold (fun _ v acc -> acc + v) variable 0
+    else if col < row then
       if sum != 0 then impossible
-      else if row < 0 then IntMap.fold (fun _ v acc -> acc + v) variable 0
       else
-        solve_at_cell matrix.(row - 1).(cols - 1) variable (row - 1) (cols - 2)
+        solve_at_cell (sums (row - 1)) variable (row - 1) (cols - 2)
     else
       let k = matrix.(row).(col) in
       match variable |> IntMap.find_opt col with
       | Some v -> solve_at_cell (sum - (k * v)) variable row (col - 1)
       | None ->
-          let values = List.init (sum + 1) (fun i -> sum - i) in
-          let results =
-            values
-            |> List.map (fun v ->
-                solve_at_cell
-                  (sum - (k * v))
-                  (variable |> IntMap.add col v)
-                  row (col - 1))
-          in
-          results |> List.fold_left (fun acc r -> min acc r) impossible
+          if row == col && k > 0 then
+            solve_at_cell
+              (sums (row - 1))
+              (variable |> IntMap.add col sum)
+              (row - 1) (cols - 2)
+          else (
+            printf "range: %d\n" sum;
+            let values = List.init (sum + 1) (fun i -> sum - i) in
+            let results =
+              values
+              |> List.map (fun v ->
+                  solve_at_cell
+                    (sum - (k * v))
+                    (variable |> IntMap.add col v)
+                    row (col - 1))
+            in
+            results |> List.fold_left (fun acc r -> min acc r) impossible)
   in
   solve_at_cell matrix.(rows - 1).(cols - 1) variable (rows - 1) (cols - 2)
-
-let solve_2 matrix =
-  let nb_rows = matrix |> Array.length in
-  let nb_cols = matrix.(0) |> Array.length in
-  let target row = matrix.(row).(nb_cols - 1) in
-  let variable = Array.init nb_cols (fun _ -> 0) in
-
-  let rec solve_cell row col =
-    printf "row:%d col:%d\n" row col;
-    print_array variable;
-    match row with
-    | -1 ->
-        printf "done\n\n";
-        if variable |> Array.exists (fun v -> v < 0) then 1000000000
-        else variable |> Array.fold_left (fun acc v -> acc + v) 0
-    | _ -> (
-        match col - row with
-        | 0 -> (
-            let value = ref (target row) in
-            for right_col = nb_cols - 2 downto col + 1 do
-              let coeff = matrix.(row).(right_col) in
-              value := !value - (coeff * variable.(right_col))
-            done;
-            match matrix.(row).(col) with
-            | 0 ->
-                let values = List.init (!value + 1) (fun i -> !value - i) in
-                let results =
-                  List.map
-                    (fun value ->
-                      variable.(col) <- value;
-                      solve_cell (row - 1) (col - 1))
-                    values
-                in
-                List.fold_left
-                  (fun acc result -> min acc result)
-                  1000000000 results
-            | k when k > 0 ->
-                variable.(col) <- k * !value;
-                solve_cell (row - 1) (col - 1)
-            | k when k < 0 -> 1000000000
-            | _ -> 1000000000)
-        | _ ->
-            let limit = target row - variable.(col + 1) in
-            let indices = List.init (limit + 1) (fun i -> limit - i) in
-            let results =
-              List.map
-                (fun v ->
-                  variable.(col) <- target row;
-                  for i = nb_cols - 2 downto col do
-                    variable.(col) <-
-                      (variable.(col)
-                      - (matrix.(row).(i) * if i == col then v else variable.(i))
-                      )
-                  done;
-                  if variable.(col) < 0 then 1000000000
-                  else solve_cell row (col - 1))
-                indices
-            in
-            List.fold_left (fun acc result -> min acc result) 1000000000 results
-        )
-  in
-  printf "start\n";
-  solve_cell (nb_rows - 1) (nb_cols - 2)
