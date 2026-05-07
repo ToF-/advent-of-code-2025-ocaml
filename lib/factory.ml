@@ -184,14 +184,15 @@ let solve matrix =
   let sums row = if row >= 0 then matrix.(row).(cols - 1) else 0 in
   let variable = IntMap.empty in
   let rec solve_at_cell sum variable row col =
-    print_map variable;
-    printf "sum:%d row:%d col:%d\n" sum row col;
-    if row < 0 then
-        IntMap.fold (fun _ v acc -> acc + v) variable 0
+    if sum < 0 then impossible
+    else if row < 0 then (
+      let result = IntMap.fold (fun _ v acc -> acc + v) variable 0 in
+      print_map variable;
+      printf "result:%d\n" result;
+      result)
     else if col < row then
       if sum != 0 then impossible
-      else
-        solve_at_cell (sums (row - 1)) variable (row - 1) (cols - 2)
+      else solve_at_cell (sums (row - 1)) variable (row - 1) (cols - 2)
     else
       let k = matrix.(row).(col) in
       match variable |> IntMap.find_opt col with
@@ -202,8 +203,7 @@ let solve matrix =
               (sums (row - 1))
               (variable |> IntMap.add col sum)
               (row - 1) (cols - 2)
-          else (
-            printf "range: %d\n" sum;
+          else
             let values = List.init (sum + 1) (fun i -> sum - i) in
             let results =
               values
@@ -213,6 +213,6 @@ let solve matrix =
                     (variable |> IntMap.add col v)
                     row (col - 1))
             in
-            results |> List.fold_left (fun acc r -> min acc r) impossible)
+            results |> List.fold_left (fun acc r -> min acc r) impossible
   in
   solve_at_cell matrix.(rows - 1).(cols - 1) variable (rows - 1) (cols - 2)
