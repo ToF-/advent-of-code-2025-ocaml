@@ -183,36 +183,48 @@ let solve matrix =
   let cols = matrix.(0) |> Array.length in
   let sums row = if row >= 0 then matrix.(row).(cols - 1) else 0 in
   let variable = IntMap.empty in
+  let update variable col v =
+    let keys = List.init col (fun i -> i) in
+    keys
+    |> List.fold_left (fun var k -> var |> IntMap.remove k) variable
+    |> IntMap.add col v
+  in
+  let get variable col = variable |> IntMap.find_opt col in
+
   let rec solve_at_cell sum variable row col =
     if sum < 0 then impossible
     else if row < 0 then (
       let result = IntMap.fold (fun _ v acc -> acc + v) variable 0 in
-      print_map variable;
       printf "result:%d\n" result;
       result)
     else if col < row then
       if sum != 0 then impossible
       else solve_at_cell (sums (row - 1)) variable (row - 1) (cols - 2)
+    else if col == row then
+      let k = matrix.(row).(col) in
+      if k == 1 then
+        solve_at_cell
+          (sums (row - 1))
+          (update variable col sum) (row - 1) (cols - 2)
+      else (
+        assert (k == 0);
+        if sum == 0 then impossible
+        else solve_at_cell (sums (row - 1)) variable (row - 1) (cols - 2))
     else
       let k = matrix.(row).(col) in
-      match variable |> IntMap.find_opt col with
+      match get variable col with
       | Some v -> solve_at_cell (sum - (k * v)) variable row (col - 1)
       | None ->
-          if row == col && k > 0 then
-            solve_at_cell
-              (sums (row - 1))
-              (variable |> IntMap.add col sum)
-              (row - 1) (cols - 2)
-          else
-            let values = List.init (sum + 1) (fun i -> sum - i) in
-            let results =
-              values
-              |> List.map (fun v ->
-                  solve_at_cell
-                    (sum - (k * v))
-                    (variable |> IntMap.add col v)
-                    row (col - 1))
-            in
-            results |> List.fold_left (fun acc r -> min acc r) impossible
+          let values = List.init (sum + 1) (fun i -> sum - i) in
+          let results =
+            values
+            |> List.map (fun v ->
+                print_map variable;
+                printf "trying with V[%d]=%d\n" col v;
+                solve_at_cell
+                  (sum - (k * v))
+                  (update variable col v) row (col - 1))
+          in
+          results |> List.fold_left (fun acc r -> min acc r) impossible
   in
   solve_at_cell matrix.(rows - 1).(cols - 1) variable (rows - 1) (cols - 2)
