@@ -94,6 +94,16 @@ let button_switches button =
 
 let light_joltages joltages = button_switches
 
+let make_matrix butts jolts =
+  let rows = jolts |> List.length in
+  let cols = 1 + (butts |> List.length) in
+  let matrix = Array.make_matrix rows cols 0 in
+  butts
+  |> List.iteri (fun col l ->
+      l |> List.iter (fun row -> matrix.(row).(col) <- 1));
+  jolts |> List.iteri (fun row v -> matrix.(row).(cols-1) <- v);
+  matrix
+
 let list_to_matrix list =
   let nb_rows = list |> List.length in
   let nb_cols = list |> List.hd |> List.length in
@@ -236,16 +246,24 @@ let solve matrix =
       else solve_at_cell (sums (row - 1)) variable (row - 1) (cols - 2)
     else if col == row then
       let k = matrix.(row).(col) in
-      if k == 1 then
-        solve_at_cell
-          (sums (row - 1))
-          (update variable col sum) (row - 1) (cols - 2)
-      else (
-        assert (k == 0);
-        printf "k == 0 ";
-        if sum == 0 then
+      match k with
+      | 1 ->
+          solve_at_cell
+            (sums (row - 1))
+            (update variable col sum) (row - 1) (cols - 2)
+      | 0 when sum == 0 ->
           solve_at_cell (sums (row - 1)) variable (row - 1) (cols - 2)
-        else nope variable)
+      | 0 when sum > 0 -> nope variable
+      | n when n < 0 ->
+          solve_at_cell
+            (sums (row - 1))
+            (update variable col 0) (row - 1) (cols - 2)
+      | n when sum mod n != 0 -> nope variable
+      | n ->
+          solve_at_cell
+            (sums (row - 1))
+            (update variable col (sum / n))
+            (row - 1) (cols - 2)
     else
       let k = matrix.(row).(col) in
       match get variable col with

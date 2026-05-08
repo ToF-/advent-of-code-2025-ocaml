@@ -6,6 +6,8 @@ let tests =
   let input = "../testdata/day10_input.txt" in
   let button_presses = Advent_of_code_2025.Factory.button_presses in
   let button_switches = Advent_of_code_2025.Factory.button_switches in
+  let make_matrix = Advent_of_code_2025.Factory.make_matrix in
+  let matrix_to_list = Advent_of_code_2025.Factory.matrix_to_list in
   let reduce list =
     let matrix = Advent_of_code_2025.Factory.list_to_matrix list in
     let reduced = Advent_of_code_2025.Factory.reduce matrix in
@@ -184,15 +186,36 @@ let tests =
            in
            print_matrix m;
            assert_equal ~printer:string_of_int 10 (solve m) );
-          ( "solving anonther extended matrix from the sample" >:: fun _ ->
+         ( "solving anonther extended matrix from the sample" >:: fun _ ->
            let m =
              [
-               [ 1; 1; 0; 1; 0; 0; 7 ];
-               [ 0; 1; 0; 0; 0; 1; 5 ];
-               [ 0; 0; 1; 1; 1; 0; 4 ];
-               [ 0; 0; 0; 0; 1; 1; 3 ];
+               [ 1; 0; 1; 1; 0; 7 ];
+               [ 0; 1; -1; 0; 1; 5 ];
+               [ 0; 0; 0; 1; 1; 5 ];
+               [ 0; 0; 0; 1; 0; 5 ];
+               [ 0; 0; 0; 0; -1; 0 ];
              ]
            in
            print_matrix m;
-           assert_equal ~printer:string_of_int 10 (solve m) );
+           assert_equal ~printer:string_of_int 12 (solve m) );
+         ( "building a matrix from the input" >:: fun _ ->
+           let butts =
+             [ [ 0; 1; 2; 3; 4 ]; [ 0; 3; 4 ]; [ 0; 1; 2; 4; 5 ]; [ 1; 2 ] ]
+           in
+           let jolts = [ 10; 11; 11; 5; 10; 5 ] in
+           let m = matrix_to_list (make_matrix butts jolts) in
+           let final =
+             [
+               [ 1; 1; 1; 0; 10 ];
+               [ 1; 0; 1; 1; 11 ];
+               [ 1; 0; 1; 1; 11 ];
+               [ 1; 1; 0; 0; 5 ];
+               [ 1; 1; 1; 0; 10 ];
+               [ 0; 0; 1; 0; 5 ];
+             ]
+           in
+           print_matrix m;
+           assert_equal m final;
+           let r = reduce final in
+           print_matrix r);
        ]
