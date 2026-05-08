@@ -184,12 +184,10 @@ let nope variable =
   impossible
 
 let result variable =
-    let result = IntMap.fold (fun _ v acc -> acc + v) variable 0
-    in 
-    print_map variable ;
-  printf "result: %d\n" result ;
+  let result = IntMap.fold (fun _ v acc -> acc + v) variable 0 in
+  print_map variable;
+  printf "result: %d\n" result;
   result
-
 
 let solve matrix =
   let rows = matrix |> Array.length in
@@ -262,6 +260,8 @@ let solve matrix =
                   (update variable col v) row (col - 1))
           in
           results |> List.fold_left (fun acc r -> min acc r) impossible
+      | None when k < 0 ->
+          solve_at_cell sum (update variable col 0) row (col - 1)
       | None -> solve_at_cell sum variable row (col - 1)
   in
   solve_at_cell matrix.(rows - 1).(cols - 1) variable (rows - 1) (cols - 2)
