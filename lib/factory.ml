@@ -178,6 +178,19 @@ let print_map m =
   l |> List.iter (fun (k, v) -> printf "V[%d]=%d\t" k v);
   printf "\n"
 
+let nope variable =
+  printf "nope: ";
+  print_map variable;
+  impossible
+
+let result variable =
+    let result = IntMap.fold (fun _ v acc -> acc + v) variable 0
+    in 
+    print_map variable ;
+  printf "result: %d\n" result ;
+  result
+
+
 let solve matrix =
   let rows = matrix |> Array.length in
   let cols = matrix.(0) |> Array.length in
@@ -197,7 +210,9 @@ let solve matrix =
         (fun acc i ->
           let coeff = matrix.(row).(i) in
           let value =
-            match get variable i with None -> impossible | Some v -> coeff * v
+            match get variable i with
+            | None -> nope variable
+            | Some v -> coeff * v
           in
           acc + value)
         0
@@ -212,27 +227,27 @@ let solve matrix =
   in
 
   let rec solve_at_cell sum variable row col =
-    if sum < 0 then impossible
+    printf "(%d,%d) %d " row col sum;
+    print_map variable;
+
+    if sum < 0 then nope variable
     else if row < 0 then
-      if check_matrix variable then (
-        let result = IntMap.fold (fun _ v acc -> acc + v) variable 0 in
-        printf "result:%d\n" result;
-        result)
-      else impossible
+      if check_matrix variable then result variable else nope variable
     else if col < row then
-      if sum != 0 then impossible
+      if sum != 0 then nope variable
       else solve_at_cell (sums (row - 1)) variable (row - 1) (cols - 2)
     else if col == row then
       let k = matrix.(row).(col) in
-      if k == 1 then (
-        printf "V[%d]=%d\n" col sum;
+      if k == 1 then
         solve_at_cell
           (sums (row - 1))
-          (update variable col sum) (row - 1) (cols - 2))
+          (update variable col sum) (row - 1) (cols - 2)
       else (
         assert (k == 0);
-        if sum == 0 then impossible
-        else solve_at_cell (sums (row - 1)) variable (row - 1) (cols - 2))
+        printf "k == 0 ";
+        if sum == 0 then
+          solve_at_cell (sums (row - 1)) variable (row - 1) (cols - 2)
+        else nope variable)
     else
       let k = matrix.(row).(col) in
       match get variable col with
@@ -242,8 +257,6 @@ let solve matrix =
           let results =
             values
             |> List.map (fun v ->
-                print_map variable;
-                printf "trying with V[%d]=%d\n" col v;
                 solve_at_cell
                   (sum - (k * v))
                   (update variable col v) row (col - 1))
